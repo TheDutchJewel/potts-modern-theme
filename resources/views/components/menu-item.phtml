@@ -1,0 +1,229 @@
+<?php
+
+declare(strict_types=1);
+
+use Fisharebest\Webtrees\Menu;
+
+/**
+ * Potts Modern replacement for the core menu-item view.
+ *
+ * @var Menu $menu
+ */
+
+$normalise = static function (string $value): string {
+    $value = strip_tags($value);
+    $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
+
+    return strtolower(trim($value));
+};
+
+$cleanLabel = static function (string $value): string {
+    $value = strip_tags($value);
+    $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
+
+    return trim($value);
+};
+
+$iconForSubmenu = static function (string $label, string $class = '', string|null $parent_icon = null) use ($normalise): string|null {
+    $text = $normalise($label . ' ' . $class);
+
+    // Exact labels first.  This covers every core webtrees chart/list/calendar
+    // item and the custom items currently used on a customised webtrees site.
+    $exact = [
+        'ancestors'                    => 'ancestors',
+        'compact tree'                 => 'compact-tree',
+        'descendants'                  => 'descendants',
+        'family book'                  => 'family-book',
+        'fan chart'                    => 'fan-chart',
+        'hourglass chart'              => 'hourglass',
+        'interactive tree'             => 'interactive-tree',
+        'lifespans'                    => 'lifespans',
+        'pedigree'                     => 'pedigree',
+        'pedigree map'                 => 'map',
+        'relationships'                => 'relationships',
+        'statistics'                   => 'statistics',
+        'timeline'                     => 'timeline',
+        'branches'                     => 'branches',
+        'families'                     => 'family',
+        'individuals'                  => 'person',
+        'individuals with patriarchs'  => 'person',
+        'media objects'                => 'media',
+        'place hierarchy'              => 'place',
+        'repositories'                 => 'repository',
+        'shared notes'                 => 'note',
+        'sources'                      => 'source',
+        'submitters'                   => 'submitter',
+        'day'                          => 'calendar',
+        'month'                        => 'calendar',
+        'year'                         => 'calendar',
+        'custom module manager'        => 'module',
+    ];
+
+    if (array_key_exists($text, $exact)) {
+        return $exact[$text];
+    }
+
+    // Ordered from most specific to most general so labels such as
+    // “Pedigree map” and “Family book” receive the correct icon.
+    $checks = [
+        'compact-tree'     => ['compact tree'],
+        'fan-chart'        => ['fan chart'],
+        'interactive-tree' => ['interactive tree'],
+        'family-book'      => ['family book'],
+        'hourglass'        => ['hourglass'],
+        'lifespans'        => ['lifespan'],
+        'statistics'       => ['statistic'],
+        'timeline'         => ['timeline'],
+        'map'              => ['pedigree map', 'map'],
+        'relationships'    => ['relationship'],
+        'ancestors'        => ['ancestor'],
+        'descendants'      => ['descendant', 'descendancy'],
+        'pedigree'         => ['pedigree'],
+        'module'           => ['custom module', 'module manager'],
+        'media'            => ['media object', 'media'],
+        'place'            => ['place hierarchy', 'place'],
+        'repository'       => ['repositor'],
+        'note'             => ['shared note', 'note'],
+        'source'           => ['source', 'citation'],
+        'submitter'        => ['submitter'],
+        'family'           => ['families', 'family group', 'family'],
+        'person'           => ['individual', 'patriarch', 'people', 'person'],
+        'calendar'         => ['day', 'month', 'year', 'calendar'],
+        'event'            => ['birth', 'death', 'marriage', 'burial', 'cemetery', 'occupation', 'event'],
+        'search'           => ['search'],
+        'books'            => ['book'],
+        'stories'          => ['story', 'stories'],
+        'branches'         => ['branch', 'tree'],
+    ];
+
+    foreach ($checks as $icon_name => $needles) {
+        foreach ($needles as $needle) {
+            if (str_contains($text, $needle)) {
+                return $icon_name;
+            }
+        }
+    }
+
+    // Never leave a submenu blank.  Third-party modules can add their own
+    // labels, so use the parent menu's icon family as a safe fallback.
+    $fallbacks = [
+        'family-tree' => 'family-tree',
+        'charts'      => 'charts',
+        'more-charts' => 'charts',
+        'lists'       => 'lists',
+        'calendar'    => 'calendar',
+        'reports'     => 'reports',
+        'cart'        => 'cart',
+        'search'      => 'search',
+        'stories'     => 'stories',
+        'books'       => 'books',
+        'your-book'   => 'books',
+    ];
+
+    return $parent_icon !== null ? ($fallbacks[$parent_icon] ?? $parent_icon) : 'reports';
+};
+
+$raw_label   = $menu->getLabel();
+$menu_label  = $normalise($raw_label);
+$menu_class  = $menu->getClass();
+$display_label = $cleanLabel($raw_label);
+
+$label_icons = [
+    'family tree'    => 'family-tree',
+    'charts'         => 'charts',
+    'lists'          => 'lists',
+    'calendar'       => 'calendar',
+    'reports'        => 'reports',
+    'clippings cart' => 'cart',
+    'search'         => 'search',
+    'stories'        => 'stories',
+    'more charts'    => 'more-charts',
+    'books'          => 'books',
+    'your book'      => 'your-book',
+];
+
+$icon = $label_icons[$menu_label] ?? null;
+
+if ($icon === null) {
+    $class_checks = [
+        'clipping' => 'cart',
+        'calendar' => 'calendar',
+        'report'   => 'reports',
+        'search'   => 'search',
+        'story'    => 'stories',
+        'book'     => 'books',
+        'list'     => 'lists',
+        'chart'    => 'charts',
+        'tree'     => 'family-tree',
+    ];
+
+    foreach ($class_checks as $needle => $candidate) {
+        if (str_contains(strtolower($menu_class), $needle)) {
+            $icon = $candidate;
+            break;
+        }
+    }
+}
+
+$feature_class = $icon !== null ? ' potts-nav-feature potts-nav-icon-' . $icon : '';
+$link_class    = $icon !== null ? ' potts-nav-feature-link' : '';
+
+$render_label = static function (Menu $item, string|null $item_icon, string $clean_label): void {
+    if ($item_icon !== null) {
+        ?>
+        <span class="potts-nav-icon" aria-hidden="true"></span>
+        <span class="potts-nav-label"><?= e($clean_label) ?></span>
+        <?php
+    } else {
+        echo $item->getLabel();
+    }
+};
+
+?>
+<?php if ($menu->getSubmenus() !== []) : ?>
+    <li class="nav-item dropdown <?= e($menu_class) ?><?= e($feature_class) ?>">
+        <a href="#"
+           class="nav-link dropdown-toggle<?= e($link_class) ?>"
+           data-bs-toggle="dropdown"
+           role="button"
+           aria-expanded="false">
+            <?php $render_label($menu, $icon, $display_label) ?>
+            <span class="caret" aria-hidden="true"></span>
+        </a>
+        <div class="dropdown-menu potts-nav-dropdown" role="menu">
+            <?php foreach ($menu->getSubmenus() as $submenu) : ?>
+                <?php
+                $submenu_label = $cleanLabel($submenu->getLabel());
+                $submenu_icon  = $iconForSubmenu($submenu_label, $submenu->getClass(), $icon);
+                ?>
+                <a
+                    class="dropdown-item potts-submenu-item <?= e($submenu->getClass()) ?><?= $submenu_icon !== null ? ' potts-submenu-icon-' . e($submenu_icon) : '' ?>"
+                    href="<?= e($submenu->getLink()) ?>"
+                    role="menuitem"
+                    <?php foreach ($submenu->getAttrs() as $key => $value) : ?>
+                        <?= e($key) ?>="<?= e($value) ?>"
+                    <?php endforeach ?>
+                >
+                    <?php if ($submenu_icon !== null) : ?>
+                        <span class="potts-submenu-icon" aria-hidden="true"></span>
+                    <?php endif ?>
+                    <span class="potts-submenu-label"><?= e($submenu_label) ?></span>
+                </a>
+            <?php endforeach ?>
+        </div>
+    </li>
+<?php else : ?>
+    <li class="nav-item <?= e($menu_class) ?><?= e($feature_class) ?>">
+        <a
+            class="nav-link<?= e($link_class) ?>"
+            href="<?= e($menu->getLink()) ?>"
+            <?php foreach ($menu->getAttrs() as $key => $value) : ?>
+                <?= e($key) ?>="<?= e($value) ?>"
+            <?php endforeach ?>
+        >
+            <?php $render_label($menu, $icon, $display_label) ?>
+        </a>
+    </li>
+<?php endif ?>
