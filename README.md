@@ -8,11 +8,11 @@ This is a **beta release** intended for testing on non-production or well-backed
 
 ### Individual page
 
-![Potts Modern home page](screenshots/potts-modern-theme 1)
+![Potts Modern home page](screenshots/potts-modern-theme 1.jpg)
 
 ### Facts and events
 
-![Potts Modern individual page](screenshots/potts-modern-theme 2)
+![Potts Modern individual page](screenshots/potts-modern-theme 2.jpg)
 
 ## Features
 
