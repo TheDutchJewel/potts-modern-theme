@@ -4,6 +4,16 @@ Potts Modern is a standalone, responsive heritage theme for webtrees 2.2.x. It c
 
 This is a **beta release** intended for testing on non-production or well-backed-up webtrees sites.
 
+## Screenshots
+
+### Individual page
+
+![Potts Modern home page](screenshots/potts-modern-theme 1)
+
+### Facts and events
+
+![Potts Modern individual page](screenshots/potts-modern-theme 2)
+
 ## Features
 
 - Responsive desktop, tablet and mobile layouts
