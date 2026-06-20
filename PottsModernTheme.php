@@ -88,7 +88,7 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
 
     public function customModuleVersion(): string
     {
-        return '1.1.0-beta.2';
+        return '1.1.0-beta.12';
     }
 
     public function customModuleAuthorName(): string
@@ -98,7 +98,7 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
 
     public function customModuleSupportUrl(): string
     {
-        return '';
+        return 'https://github.com/PottsNet/potts-modern-theme/issues';
     }
 
     public function resourcesFolder(): string
@@ -448,6 +448,40 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
             $this->settings(),
             JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
         );
+        $placeholder_urls = [];
+
+        foreach ([
+            'male'         => 'silhouette-male.png',
+            'female'       => 'silhouette-female.png',
+            'chartMale'    => 'chart-silhouette-male.svg',
+            'chartFemale'  => 'chart-silhouette-female.svg',
+            'chartUnknown' => 'chart-silhouette-unknown.svg',
+        ] as $gender => $filename) {
+            $file = $this->resourcesFolder() . 'images/' . $filename;
+
+            if (!is_readable($file)) {
+                continue;
+            }
+
+            $image = file_get_contents($file);
+
+            if ($image === false || $image === '') {
+                continue;
+            }
+
+            $extension = strtolower((string) pathinfo($filename, PATHINFO_EXTENSION));
+            $mime      = $extension === 'svg' ? 'image/svg+xml' : 'image/png';
+
+            // Use embedded data URLs here. boot() runs before the PSR-7 request
+            // is available, so generating a module asset route at this point
+            // causes the container to try to instantiate ServerRequestInterface.
+            $placeholder_urls[$gender] = 'data:' . $mime . ';base64,' . base64_encode($image);
+        }
+
+        $placeholders_json = json_encode(
+            $placeholder_urls,
+            JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+        );
 
         if ($icons_json === false) {
             $icons_json = '{}';
@@ -455,11 +489,14 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
         if ($settings_json === false) {
             $settings_json = '{}';
         }
+        if ($placeholders_json === false) {
+            $placeholders_json = '{}';
+        }
 
         $script_file = $this->resourcesFolder() . 'js/theme.js';
         $script      = is_readable($script_file) ? file_get_contents($script_file) : false;
 
-        $config = "\n<script id=\"potts-modern-theme-config\">window.PottsModernThemeIcons=" . $icons_json . ';window.PottsModernThemeSettings=' . $settings_json . ";</script>\n";
+        $config = "\n<script id=\"potts-modern-theme-config\">window.PottsModernThemeIcons=" . $icons_json . ';window.PottsModernThemeSettings=' . $settings_json . ';window.PottsModernThemePlaceholders=' . $placeholders_json . ";</script>\n";
 
         if ($script === false || $script === '') {
             return $config;

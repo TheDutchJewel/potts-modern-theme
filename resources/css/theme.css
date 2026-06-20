@@ -3938,6 +3938,7 @@ body[class*="individual"] :is(#facts_content, [id*="facts_content"], [id*="perso
   align-items: center;
   width: min(100%, 320px) !important;
   margin-inline-start: auto !important;
+  margin-block: .3rem !important;
   padding: .2rem !important;
   border: 1px solid rgba(255,255,255,.28) !important;
   border-radius: 999px !important;
@@ -8312,7 +8313,7 @@ header .potts-modern-history-region-link,
 #top-header .potts-modern-history-region-link,
 .navbar .potts-modern-history-region-link {
   position: relative !important;
-  top: 2px !important;
+  top: 3px !important;
   display: inline-flex !important;
   align-items: center !important;
   min-height: 2.5rem !important;
@@ -8468,4 +8469,63 @@ main #tvStylesSubmenu li.tv_button:hover,
     padding: .55rem !important;
     border-radius: 15px !important;
   }
+}
+
+
+/* Potts Modern 1.1.0-beta.4 - themed default individual silhouettes */
+img.potts-modern-silhouette {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  border-radius: 16px !important;
+  background: var(--potts-bg-2, #fffaf2) !important;
+}
+
+.wt-chart-box img.potts-modern-silhouette,
+.person_box img.potts-modern-silhouette,
+.person_boxF img.potts-modern-silhouette,
+.person_boxM img.potts-modern-silhouette,
+.person_boxNN img.potts-modern-silhouette {
+  border-radius: 10px !important;
+}
+
+
+/* Potts Modern 1.1.0-beta.9 - silhouette handling is now JavaScript-only.
+ * The broad CSS content replacement used in earlier betas also affected
+ * compact tree and ancestor chart nodes.  Keep only image styling here and let
+ * the script replace the main individual-page portrait placeholder.
+ */
+/* If the silhouette sits in the portrait card, let the replacement fill it. */
+.wt-individual-page [class*="icon-silhouette" i],
+.wt-individual-page [class*="silhouette" i]:not(img),
+main #individual-names [class*="icon-silhouette" i],
+main #individual-names [class*="silhouette" i]:not(img) {
+  border-radius: 12px !important;
+}
+
+/* Potts Modern 1.1.0-beta.10 - compact chart silhouettes */
+img.potts-modern-chart-silhouette {
+  display: inline-block !important;
+  width: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  height: 52px !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  vertical-align: top !important;
+}
+
+.wt-chart-box img.potts-modern-chart-silhouette,
+.person_box img.potts-modern-chart-silhouette,
+.person_boxF img.potts-modern-chart-silhouette,
+.person_boxM img.potts-modern-chart-silhouette,
+.person_boxNN img.potts-modern-chart-silhouette,
+.tv_box img.potts-modern-chart-silhouette {
+  margin: 0 0.35rem 0 0 !important;
 }

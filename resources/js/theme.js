@@ -372,6 +372,44 @@
     return title;
   }
 
+  function formatHistoricalAgeMarkers(root) {
+    const marker = '__POTTS_HISTORY_AGE__';
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node = walker.nextNode();
+
+    while (node) {
+      if ((node.nodeValue || '').includes(marker)) {
+        nodes.push(node);
+      }
+      node = walker.nextNode();
+    }
+
+    nodes.forEach(function (textNode) {
+      const text = textNode.nodeValue || '';
+      const position = text.indexOf(marker);
+      const title = text.substring(0, position).trim();
+      const age = text.substring(position + marker.length).trim();
+
+      if (!title || !age || !textNode.parentNode) {
+        return;
+      }
+
+      const titleElement = document.createElement('span');
+      titleElement.className = 'potts-history-event-type';
+      titleElement.textContent = title;
+
+      const ageElement = document.createElement('div');
+      ageElement.className = 'potts-history-event-age small text-muted mt-2';
+      ageElement.textContent = age;
+
+      const fragment = document.createDocumentFragment();
+      fragment.appendChild(titleElement);
+      fragment.appendChild(ageElement);
+      textNode.parentNode.replaceChild(fragment, textNode);
+    });
+  }
+
   function compactFactHeading(cell) {
     const selectors = [
       '.wt-fact-label', '.descriptionbox', '.potts-fact-title',
@@ -621,6 +659,47 @@
       sourceElement.style.setProperty('display', 'none', 'important');
     }
 
+    // Third-party historic facts can leave the same TYPE label in more than
+    // one text node. Keep the new panel and remove only exact duplicate labels
+    // from the summary cell, leaving the event description and age untouched.
+    const duplicateWalker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        const parent = node.parentElement;
+
+        if (!parent || panel.contains(parent)) {
+          return NodeFilter.FILTER_REJECT;
+        }
+
+        if (parent.closest('a, button, input, select, textarea, .potts-fact-actions, .wt-fact-age, [class*="fact-age"]')) {
+          return NodeFilter.FILTER_REJECT;
+        }
+
+        return cleanRelationshipLabel(node.nodeValue || '') === label
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_REJECT;
+      }
+    });
+    const duplicateNodes = [];
+    let duplicateNode = duplicateWalker.nextNode();
+
+    while (duplicateNode) {
+      duplicateNodes.push(duplicateNode);
+      duplicateNode = duplicateWalker.nextNode();
+    }
+
+    duplicateNodes.forEach(function (node) {
+      const parent = node.parentElement;
+      const parentText = parent ? cleanRelationshipLabel(parent.innerText || parent.textContent || '') : '';
+
+      if (parent && parent !== cell && parentText === label && !parent.querySelector('a, button, input, select, textarea')) {
+        parent.classList.add('potts-original-fact-title');
+        parent.setAttribute('aria-hidden', 'true');
+        parent.style.setProperty('display', 'none', 'important');
+      } else {
+        node.nodeValue = '';
+      }
+    });
+
     normaliseEventTitlePanel(panel);
 
     // Rebuild the panel as one clean flex row. Earlier releases could leave
@@ -690,6 +769,11 @@
     if (!factRoot) {
       return;
     }
+
+    // Historical Facts includes age information in its generated TYPE value.
+    // Convert its marker before reading headings so module execution order can
+    // never expose the marker or make the theme copy it into the title panel.
+    formatHistoricalAgeMarkers(factRoot);
 
     // First handle conventional table rows inside the Facts and events tab.
     factRoot.querySelectorAll('tr').forEach(function (row) {
@@ -1318,6 +1402,187 @@
       if (!isInsideFactsRoot(row)) {
         row.classList.remove('potts-top-level-fact-row');
       }
+    });
+  }
+
+  function replaceDefaultSilhouettes() {
+    const placeholders = window.PottsModernThemePlaceholders || {};
+
+    if (!placeholders.male && !placeholders.female) {
+      return;
+    }
+
+    function pageGender() {
+      const main = document.querySelector('main') || document.body;
+      const text = normalise(main ? main.textContent || '' : '');
+
+      if (text.includes('sex female')) {
+        return 'female';
+      }
+      if (text.includes('sex male')) {
+        return 'male';
+      }
+
+      return '';
+    }
+
+    function inferGender(element) {
+      const own = ((element.getAttribute('class') || '') + ' ' + (element.getAttribute('src') || '') + ' ' + (element.getAttribute('alt') || '')).toLowerCase();
+
+      // Female first because "female" contains "male".
+      if (/female|icon-silhouette[-_\s]?f\b|silhouette[-_\s]?f\b|person_boxf\b|sex[-_\s]?f\b/.test(own)) {
+        return 'female';
+      }
+      if (/male|icon-silhouette[-_\s]?m\b|silhouette[-_\s]?m\b|person_boxm\b|sex[-_\s]?m\b/.test(own)) {
+        return 'male';
+      }
+
+      const context = element.closest('.wt-individual-page, .wt-chart-box, .person_box, .person_boxF, .person_boxM, .person_boxNN, .card, .row, main');
+      const contextClass = context ? (context.getAttribute('class') || '').toLowerCase() : '';
+      const contextText = context ? normalise(context.textContent || '') : '';
+
+      if (/person_boxf\b|female|sex female/.test(contextClass + ' ' + contextText)) {
+        return 'female';
+      }
+      if (/person_boxm\b|male|sex male/.test(contextClass + ' ' + contextText)) {
+        return 'male';
+      }
+
+      return pageGender();
+    }
+
+    function isChartSilhouetteReplacementAllowed(element) {
+      if (!element) {
+        return false;
+      }
+
+      return Boolean(
+        element.closest('.tv_out, .tv_tree, .tv_box, .wt-chart-box, .person_box, .person_boxF, .person_boxM, .person_boxNN, .pedigree-chart, .hourglass-chart, .fan-chart, .compact-tree, .interactive-tree, .wt-chart')
+      );
+    }
+
+    function isProfileSilhouetteReplacementAllowed(element) {
+      // Only replace the main individual portrait placeholder with the large
+      // framed artwork. Compact tree/chart silhouettes use a separate simpler
+      // icon set.
+      if (!element) {
+        return false;
+      }
+
+      if (isChartSilhouetteReplacementAllowed(element) || element.closest('svg')) {
+        return false;
+      }
+
+      const main = document.querySelector('main');
+      const names = main ? main.querySelector('#individual-names') : null;
+      const identity = names ? (names.closest('.row.mb-4') || names.closest('.row')) : null;
+
+      if (identity && identity.contains(element)) {
+        return true;
+      }
+
+      // Fallback for markup variants where the portrait is outside the names
+      // row but still in the main media/profile area near the individual name.
+      if (element.closest('.wt-individual-page, .wt-individual, .individual, .media-object, .wt-media-object')) {
+        return true;
+      }
+
+      return false;
+    }
+
+    function replacementSource(gender, variant) {
+      if (variant === 'chart') {
+        if (gender === 'female' && placeholders.chartFemale) {
+          return placeholders.chartFemale;
+        }
+
+        if (gender === 'male' && placeholders.chartMale) {
+          return placeholders.chartMale;
+        }
+
+        if (placeholders.chartUnknown) {
+          return placeholders.chartUnknown;
+        }
+
+        return placeholders.chartMale || placeholders.chartFemale || '';
+      }
+
+      return placeholders[gender] || '';
+    }
+
+    function replaceElementWithImage(element, gender, variant) {
+      const source = replacementSource(gender, variant);
+      const isChart = variant === 'chart';
+      const allowed = isChart ? isChartSilhouetteReplacementAllowed(element) : isProfileSilhouetteReplacementAllowed(element);
+      const alreadyDone = element.classList.contains('potts-modern-silhouette') || element.classList.contains('potts-modern-chart-silhouette');
+
+      if (!source || alreadyDone || !allowed) {
+        return;
+      }
+
+      const image = document.createElement('img');
+      image.src = source;
+      image.alt = element.getAttribute('alt') || '';
+      image.setAttribute('aria-hidden', element.getAttribute('aria-hidden') || 'true');
+      image.className = (isChart ? 'potts-modern-chart-silhouette' : 'potts-modern-silhouette') + ' ' + (isChart ? 'potts-modern-chart-silhouette-' : 'potts-modern-silhouette-') + (gender || 'unknown');
+
+      const classNames = (element.getAttribute('class') || '').split(/\s+/).filter(Boolean);
+      classNames.forEach(function (className) {
+        if (!/silhouette/i.test(className)) {
+          image.classList.add(className);
+        }
+      });
+
+      if (element.getAttribute('title')) {
+        image.setAttribute('title', element.getAttribute('title'));
+      }
+
+      element.replaceWith(image);
+    }
+
+    // webtrees commonly renders the default portrait as an <i> element with
+    // icon-silhouette classes. Some installs use upper-case sex suffixes, so
+    // use JavaScript class inspection instead of exact CSS selectors.
+    Array.from(document.querySelectorAll('i, span, div')).forEach(function (element) {
+      const classes = (element.getAttribute('class') || '').toLowerCase();
+
+      if (!classes.includes('silhouette')) {
+        return;
+      }
+
+      replaceElementWithImage(element, inferGender(element), isChartSilhouetteReplacementAllowed(element) ? 'chart' : 'profile');
+    });
+
+    // Some themes/modules may render a real <img> placeholder instead.
+    Array.from(document.images || []).forEach(function (image) {
+      if (!(image instanceof HTMLImageElement) || image.classList.contains('potts-modern-silhouette') || image.classList.contains('potts-modern-chart-silhouette')) {
+        return;
+      }
+
+      const marker = ((image.getAttribute('class') || '') + ' ' + (image.getAttribute('src') || '') + ' ' + (image.getAttribute('alt') || '')).toLowerCase();
+
+      if (!marker.includes('silhouette')) {
+        return;
+      }
+
+      const gender = inferGender(image) || 'unknown';
+      const variant = isChartSilhouetteReplacementAllowed(image) ? 'chart' : 'profile';
+      const source = replacementSource(gender, variant);
+
+      if (!source) {
+        return;
+      }
+
+      if (!image.dataset.pottsOriginalSilhouette) {
+        image.dataset.pottsOriginalSilhouette = image.getAttribute('src') || '';
+      }
+
+      image.removeAttribute('srcset');
+      image.src = source;
+      image.classList.add(
+        variant === 'chart' ? 'potts-modern-chart-silhouette' : 'potts-modern-silhouette',
+        variant === 'chart' ? 'potts-modern-chart-silhouette-' + gender : 'potts-modern-silhouette-' + gender
+      );
     });
   }
 
@@ -2250,6 +2515,7 @@
     enhanceMessagesAndNewsBlocks();
     enhanceUtilityPages();
     cleanIncorrectFactEnhancements();
+    replaceDefaultSilhouettes();
     enhanceIndividualIdentityCard();
     enhanceFamilyNavigator();
     resetNestedFactEnhancements();
@@ -2272,6 +2538,12 @@
 
   function start() {
     runEnhancements();
+
+    // The individual portrait can be added by webtrees/AJAX slightly after the
+    // first theme pass, so retry the silhouette replacement a few times.
+    [50, 250, 750, 1500].forEach(function (delay) {
+      window.setTimeout(replaceDefaultSilhouettes, delay);
+    });
 
     // The Family navigator creates its floating popover only after the arrow
     // is clicked. Follow the clicked trigger to the generated popover using
