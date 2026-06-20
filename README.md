@@ -4,9 +4,9 @@ Potts Modern is a standalone, responsive heritage theme for webtrees 2.2.x. It c
 
 This is a **beta release** intended for testing on non-production or well-backed-up webtrees sites.
 
-## Version 1.1.0-beta.12
+## Version 1.1.0-beta.13
 
-This release fixes Historical Facts headings so the internal age marker is never exposed and each card retains one title and one age line. It also includes the header spacing and alignment improvements from beta.11.
+This release fixes the administration settings page when Potts Modern is not the active theme. It also includes the Historical Facts compatibility and header improvements from beta.12.
 
 ## Features
 

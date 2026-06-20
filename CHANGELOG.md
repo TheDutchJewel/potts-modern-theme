@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0-beta.13
+
+- Fixed the configuration page failing with `Namespace "potts-modern" not found` when another theme is active.
+- Ensured the Potts Modern settings view is registered before the administration page is rendered.
+
 ## 1.1.0-beta.12
 
 - Fixed Historical Facts headings exposing the internal age marker.

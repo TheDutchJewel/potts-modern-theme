@@ -88,7 +88,7 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
 
     public function customModuleVersion(): string
     {
-        return '1.1.0-beta.12';
+        return '1.1.0-beta.13';
     }
 
     public function customModuleAuthorName(): string
@@ -148,6 +148,10 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
     {
         $this->assertAdministrator($request);
         $this->layout = 'layouts/administration';
+
+        // Theme boot() runs only when Potts Modern is selected. Administrators
+        // must still be able to open its settings while another theme is active.
+        View::registerNamespace('potts-modern', $this->resourcesFolder() . 'views/');
 
         return $this->viewResponse('potts-modern::admin/settings', [
             'title'       => I18N::translate('Potts Modern theme settings'),
