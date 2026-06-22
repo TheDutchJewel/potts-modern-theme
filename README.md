@@ -4,9 +4,13 @@ Potts Modern is a standalone, responsive heritage theme for webtrees 2.2.x. It c
 
 This is a **beta release** intended for testing on non-production or well-backed-up webtrees sites.
 
-## Version 1.1.0-beta.13
+## Version 1.1.0-beta.51
 
-This release fixes the administration settings page when Potts Modern is not the active theme. It also includes the Historical Facts compatibility and header improvements from beta.12.
+This release makes the mobile Show more events control respond immediately and count only events enabled by the event filters. It retains the substantially reduced portrait payload, semantic event colours and consistent rounded corners.
+
+## Translations
+
+The translation template is `resources/lang/messages.pot`. Dutch contributors can edit `resources/lang/nl.po` with Poedit or a text editor, translating each `msgstr` while leaving its English `msgid` unchanged. Submit the completed PO file in a pull request or attach it to a GitHub issue. Release builds compile accepted PO files to the MO files loaded by webtrees.
 
 ## Features
 
@@ -16,6 +20,7 @@ This release fixes the administration settings page when Potts Modern is not the
 - Enhanced fact and event cards with matching SVG icons
 - Original themed male and female placeholder portraits
 - Configurable colour palette, spacing, page width, corners and shadows
+- Contributor-ready gettext translation files
 - Optional larger controls, high contrast and reduced motion settings
 - Graceful styling for optional third-party history, story and book modules
 - No webtrees core-file modifications
@@ -96,7 +101,7 @@ When reporting a problem, include:
 - relevant third-party modules
 - a screenshot and browser-console error, where available
 
-Add the repository’s Issues URL to `customModuleSupportUrl()` in `PottsModernTheme.php` after the GitHub repository has been created.
+Report problems through the repository's [GitHub Issues](https://github.com/PottsNet/potts-modern-theme/issues) page.
 
 ## Licence
 

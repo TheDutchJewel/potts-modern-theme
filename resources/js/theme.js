@@ -102,8 +102,8 @@
       return false;
     }
 
-    const text = normalise(main.textContent || '');
-    return text.includes('family navigator') && text.includes('facts and events');
+    return Boolean(main.querySelector('#individual-tabs, .wt-tabs-individual')) &&
+      Boolean(main.querySelector('#individual-names'));
   }
 
   function getFactsRoot() {
@@ -136,6 +136,122 @@
   function isInsideFactsRoot(element) {
     const root = getFactsRoot();
     return Boolean(root && element && (root === element || root.contains(element)));
+  }
+
+  function primaryFactsTable(root) {
+    if (!root) {
+      return null;
+    }
+
+    const tables = [];
+
+    if (root.matches && root.matches('table')) {
+      tables.push(root);
+    }
+
+    root.querySelectorAll('table').forEach(function (table) {
+      const containingTable = table.parentElement ? table.parentElement.closest('table') : null;
+
+      if (!containingTable) {
+        tables.push(table);
+      }
+    });
+
+    return tables.reduce(function (largest, table) {
+      const rowCount = directFactRows(table).length;
+      const largestCount = largest ? directFactRows(largest).length : -1;
+      return rowCount > largestCount ? table : largest;
+    }, null);
+  }
+
+  function directFactRows(table) {
+    if (!table || !table.tBodies) {
+      return [];
+    }
+
+    return Array.from(table.tBodies).flatMap(function (body) {
+      return Array.from(body.children).filter(function (row) {
+        return row.matches && row.matches('tr');
+      });
+    });
+  }
+
+  function responsiveFactCategory(row, firstCell) {
+    if (rowLooksLikeHistoricalFact(row)) {
+      return 'historic';
+    }
+
+    const attributes = [row.className || '', row.id || ''];
+    Array.from(row.attributes || []).forEach(function (attribute) {
+      if (attribute.name.startsWith('data-')) {
+        attributes.push(attribute.value || '');
+      }
+    });
+
+    const signature = normalise(attributes.join(' ').replace(/[_-]+/g, ' '));
+
+    if (/\b(?:associate|associated|witness)\b/.test(signature)) {
+      return 'associated';
+    }
+
+    if (/\b(?:relation|relative|close relative)\b/.test(signature)) {
+      return 'relative';
+    }
+
+    const summary = normalise(firstCell ? firstCell.textContent || '' : '');
+    if (/\b(?:birth|death|marriage|christening|baptism|burial|cremation|adoption|divorce|occupation|residence) of (?:a |an |the |his |her )?(?:father|mother|parent|son|daughter|child|brother|sister|spouse|husband|wife|grandfather|grandmother|grandson|granddaughter)\b/.test(summary)) {
+      return 'relative';
+    }
+
+    return 'personal';
+  }
+
+  function markResponsiveFactTiles(root) {
+    if (!root) {
+      return;
+    }
+
+    root.classList.add('potts-facts-root');
+
+    const table = primaryFactsTable(root);
+    if (!table) {
+      return;
+    }
+
+    table.classList.add('potts-responsive-facts-table');
+
+    directFactRows(table).forEach(function (row) {
+      const cells = Array.from(row.children).filter(function (cell) {
+        return cell.matches && cell.matches('th, td');
+      });
+
+      if (cells.length < 2 || row.querySelector('input[type="checkbox"]')) {
+        return;
+      }
+
+      row.classList.add('potts-responsive-fact-tile');
+      cells[0].classList.add('potts-responsive-fact-start');
+      cells[cells.length - 1].classList.add('potts-responsive-fact-end');
+
+      const category = responsiveFactCategory(row, cells[0]);
+      const palette = {
+        personal: { background: '#f5ecda', accent: '#b98638' },
+        associated: { background: '#e7eff2', accent: '#648b95' },
+        relative: { background: '#e7efe6', accent: '#789078' },
+        historic: { background: '#ecebe7', accent: '#7c8284' }
+      }[category];
+
+      row.classList.remove(
+        'potts-fact-category-personal',
+        'potts-fact-category-associated',
+        'potts-fact-category-relative',
+        'potts-fact-category-historic'
+      );
+      row.classList.add('potts-fact-category-' + category);
+      row.style.setProperty('border-left-color', palette.accent, 'important');
+      cells[0].style.setProperty('background-color', palette.background, 'important');
+      cells[0].style.setProperty('border-left-color', palette.accent, 'important');
+    });
   }
 
   function nearbyText(element, levels) {
@@ -199,7 +315,14 @@
       return;
     }
 
-    document.querySelectorAll('main td, main th, main div, main span, main button, main a').forEach(function (element) {
+    const main = document.querySelector('main');
+    const navigator = main ? findFamilyNavigator(main) : null;
+
+    if (!navigator) {
+      return;
+    }
+
+    navigator.querySelectorAll('td, th, div, span, button, a').forEach(function (element) {
       const label = relationshipLabelFor(element);
 
       if (!label) {
@@ -234,6 +357,17 @@
       }
 
       cell.classList.add('potts-family-role-cell');
+
+      const row = cell.closest('tr');
+
+      if (row) {
+        row.classList.add('potts-family-person-row');
+        Array.from(row.children).forEach(function (sibling) {
+          if (sibling !== cell && sibling.matches('th, td')) {
+            sibling.classList.add('potts-family-person-cell');
+          }
+        });
+      }
 
       const isSelf = label === 'himself' || label === 'herself' || label === 'self';
 
@@ -769,6 +903,8 @@
     if (!factRoot) {
       return;
     }
+
+    factRoot.classList.add('potts-facts-root');
 
     // Historical Facts includes age information in its generated TYPE value.
     // Convert its marker before reading headings so module execution order can
@@ -1412,18 +1548,28 @@
       return;
     }
 
+    let cachedPageGender;
+
     function pageGender() {
+      if (cachedPageGender !== undefined) {
+        return cachedPageGender;
+      }
+
       const main = document.querySelector('main') || document.body;
-      const text = normalise(main ? main.textContent || '' : '');
+      const names = main ? main.querySelector('#individual-names') : null;
+      const text = normalise(names ? names.textContent || '' : '');
 
       if (text.includes('sex female')) {
-        return 'female';
+        cachedPageGender = 'female';
+        return cachedPageGender;
       }
       if (text.includes('sex male')) {
-        return 'male';
+        cachedPageGender = 'male';
+        return cachedPageGender;
       }
 
-      return '';
+      cachedPageGender = '';
+      return cachedPageGender;
     }
 
     function inferGender(element) {
@@ -1543,7 +1689,11 @@
     // webtrees commonly renders the default portrait as an <i> element with
     // icon-silhouette classes. Some installs use upper-case sex suffixes, so
     // use JavaScript class inspection instead of exact CSS selectors.
-    Array.from(document.querySelectorAll('i, span, div')).forEach(function (element) {
+    Array.from(document.querySelectorAll('[class*="silhouette" i]')).forEach(function (element) {
+      if (!element.matches('i, span, div')) {
+        return;
+      }
+
       const classes = (element.getAttribute('class') || '').toLowerCase();
 
       if (!classes.includes('silhouette')) {
@@ -1598,7 +1748,11 @@
       return;
     }
 
-    const identity = names.closest('.row.mb-4') || names.closest('.row');
+    main.querySelectorAll('.potts-owner-identity').forEach(function (element) {
+      element.classList.remove('potts-owner-identity');
+    });
+
+    let identity = names.closest('.row.mb-4') || names.closest('.row');
 
     if (!identity) {
       return;
@@ -1615,7 +1769,87 @@
       if (child.querySelector('.img-thumbnail, .carousel, .wt-individual-silhouette')) {
         child.classList.add('potts-individual-media');
       }
+
+      const hasRelationshipLink = (child.matches('a[href]') ? [child] : Array.from(child.querySelectorAll('a[href]')))
+        .some(function (link) {
+          return (link.getAttribute('href') || '').toLowerCase().includes('relationship');
+        });
+
+      if (hasRelationshipLink) {
+        child.classList.add('potts-individual-relationship');
+      }
+
+      const childText = normalise(child.textContent || '');
+
+      if (childText.includes('relationship to') || childText.includes('this is you')) {
+        child.classList.add('potts-individual-relationship');
+      }
     });
+
+    Array.from(identity.querySelectorAll('a, button')).forEach(function (control) {
+      if (!/^edit\b/.test(normalise(control.textContent || ''))) {
+        return;
+      }
+
+      const directChild = Array.from(identity.children).find(function (child) {
+        return child.contains(control);
+      });
+      const actionContainer = control.closest('.dropdown, .btn-group') || control.parentElement;
+
+      actionContainer?.classList.add('potts-individual-actions');
+
+      if (directChild && directChild !== names && !directChild.contains(names) &&
+          !directChild.classList.contains('potts-individual-relationship')) {
+        directChild.classList.add('potts-individual-actions-host');
+      }
+    });
+  }
+
+  function enhanceIndividualRelationshipPanel() {
+    if (!isIndividualPage()) {
+      return;
+    }
+
+    const main = document.querySelector('main');
+    const names = main ? main.querySelector('#individual-names') : null;
+    if (!main || !names) {
+      return;
+    }
+
+    main.querySelectorAll('.potts-individual-relationship-row, .potts-individual-relationship-node').forEach(function (element) {
+      element.classList.remove('potts-individual-relationship-row', 'potts-individual-relationship-node');
+    });
+
+    // webtrees renders the visible individual title above the portrait/name
+    // row. Using #individual-names here made the common ancestor encompass
+    // the sidebar, portrait and tabs, which reversed their mobile order.
+    const heading = main.querySelector('.wt-page-title, h1') ||
+      names.querySelector('h1, h2, .wt-page-title') || names;
+
+    let titleBranch = heading;
+    let layout = heading.parentElement;
+
+    while (layout && layout !== main) {
+      const relationshipBranch = Array.from(layout.children).find(function (child) {
+        if (child === titleBranch || child.contains(heading)) {
+          return false;
+        }
+
+        const text = normalise(child.textContent || '');
+        return text.includes('relationship to') &&
+          (text.includes('view relationship') || text.includes('no relationship could be found') || text.includes('this is you'));
+      });
+
+      if (relationshipBranch) {
+        layout.classList.add('potts-individual-relationship-row');
+        titleBranch.classList.add('potts-individual-title-branch');
+        relationshipBranch.classList.add('potts-individual-relationship-panel');
+        break;
+      }
+
+      titleBranch = layout;
+      layout = layout.parentElement;
+    }
   }
 
 
@@ -1641,6 +1875,12 @@
   }
 
   function findIndividualTabs(main) {
+    const nativeTabs = main.querySelector('#individual-tabs > .nav, .wt-tabs-individual > .nav');
+
+    if (nativeTabs) {
+      return nativeTabs;
+    }
+
     const candidates = Array.from(main.querySelectorAll('a, button')).filter(function (element) {
       return normalise(element.textContent || '').startsWith('facts and events');
     });
@@ -1662,6 +1902,24 @@
     }
 
     return null;
+  }
+
+  function findFamilyNavigator(main) {
+    const nativeNavigator = main.querySelector('.wt-family-navigator');
+
+    if (nativeNavigator) {
+      return nativeNavigator;
+    }
+
+    const heading = Array.from(main.querySelectorAll('button, [role="button"], h2, h3, h4')).find(function (element) {
+      return normalise(element.textContent || '') === 'family navigator';
+    });
+
+    if (!heading) {
+      return null;
+    }
+
+    return heading.closest('.accordion-item, section, aside, .card') || heading.parentElement;
   }
 
   function findCheckboxFilter(main) {
@@ -1749,6 +2007,218 @@
     if (panel) {
       panel.classList.add('potts-individual-tab-panel');
     }
+
+    const familyNavigator = findFamilyNavigator(main);
+
+    if (tabs && familyNavigator) {
+      const tabsRoot = tabs.closest('#individual-tabs, .wt-tabs-individual') || tabs;
+      const nativeMainColumn = tabsRoot.closest('.col-sm-8');
+      const nativeSidebarColumn = familyNavigator.closest('.col-sm-4');
+
+      if (nativeMainColumn && nativeSidebarColumn && nativeMainColumn.parentElement === nativeSidebarColumn.parentElement) {
+        nativeMainColumn.parentElement.classList.add('potts-individual-content-layout');
+        nativeMainColumn.classList.add('potts-individual-main-branch');
+        nativeSidebarColumn.classList.add('potts-individual-sidebar-branch');
+      }
+
+      let layout = tabs.parentElement;
+
+      while (layout && layout !== main && !layout.contains(familyNavigator)) {
+        layout = layout.parentElement;
+      }
+
+      if (layout) {
+        const tabBranch = Array.from(layout.children).find(function (child) {
+          return child === tabs || child.contains(tabs);
+        });
+        const navigatorBranch = Array.from(layout.children).find(function (child) {
+          return child === familyNavigator || child.contains(familyNavigator);
+        });
+
+        if (tabBranch && navigatorBranch && tabBranch !== navigatorBranch) {
+          layout.classList.add('potts-individual-content-layout');
+          tabBranch.classList.add('potts-individual-main-branch');
+          navigatorBranch.classList.add('potts-individual-sidebar-branch');
+        }
+      }
+    }
+
+    main.querySelectorAll('.wt-family-members, .wt-tab-relatives').forEach(function (familyMembers) {
+      familyMembers.classList.add('potts-mobile-families');
+
+      familyMembers.querySelectorAll('table').forEach(function (table) {
+        const parentTable = table.parentElement ? table.parentElement.closest('table') : null;
+
+        if (parentTable && familyMembers.contains(parentTable)) {
+          return;
+        }
+
+        table.classList.add('potts-mobile-family-table');
+        Array.from(table.tBodies || []).forEach(function (body) {
+          Array.from(body.children).forEach(function (row) {
+            if (!row.matches('tr')) {
+              return;
+            }
+
+            row.classList.add('potts-mobile-family-row');
+            Array.from(row.children).forEach(function (cell) {
+              if (cell.matches('th, td')) {
+                cell.classList.add('potts-mobile-family-cell');
+              }
+            });
+          });
+        });
+      });
+    });
+  }
+
+  function positionMobileIndividualSidebar() {
+    if (!isIndividualPage()) {
+      return false;
+    }
+
+    const main = document.querySelector('main');
+    const tabs = main ? findIndividualTabs(main) : null;
+    const navigator = main ? findFamilyNavigator(main) : null;
+
+    if (!main || !tabs || !navigator) {
+      return false;
+    }
+
+    const mobile = window.matchMedia('(max-width: 767.98px)').matches;
+    const relocated = main.querySelector('.potts-relocated-individual-sidebar');
+    const marker = main.querySelector('.potts-individual-sidebar-placeholder');
+
+    if (!mobile) {
+      if (relocated && marker && marker.parentNode) {
+        marker.parentNode.insertBefore(relocated, marker.nextSibling);
+        relocated.classList.remove('potts-relocated-individual-sidebar');
+        marker.remove();
+      }
+      return true;
+    }
+
+    if (relocated) {
+      return true;
+    }
+
+    const tabsRoot = tabs.closest('#individual-tabs, .wt-tabs-individual') || tabs;
+    let layout = tabsRoot.parentElement;
+
+    while (layout && layout !== main && !layout.contains(navigator)) {
+      layout = layout.parentElement;
+    }
+
+    if (!layout) {
+      return false;
+    }
+
+    const mainBranch = Array.from(layout.children).find(function (child) {
+      return child === tabsRoot || child.contains(tabsRoot);
+    });
+    const sidebarBranch = Array.from(layout.children).find(function (child) {
+      return child === navigator || child.contains(navigator);
+    });
+
+    if (!mainBranch || !sidebarBranch || mainBranch === sidebarBranch) {
+      return false;
+    }
+
+    const placeholder = document.createElement('span');
+    placeholder.className = 'potts-individual-sidebar-placeholder';
+    placeholder.setAttribute('aria-hidden', 'true');
+    sidebarBranch.parentNode.insertBefore(placeholder, sidebarBranch);
+    sidebarBranch.classList.add('potts-relocated-individual-sidebar');
+    mainBranch.append(sidebarBranch);
+    return true;
+  }
+
+  function watchForMobileIndividualLayout() {
+    if (!isMobileIndividualPage()) {
+      return;
+    }
+
+    const main = document.querySelector('main');
+
+    if (!main || positionMobileIndividualSidebar()) {
+      return;
+    }
+
+    const observer = new MutationObserver(function () {
+      if (positionMobileIndividualSidebar()) {
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(main, { childList: true, subtree: true });
+    window.setTimeout(function () {
+      observer.disconnect();
+    }, 15000);
+  }
+
+  function cleanIndividualCarryover() {
+    const active = isIndividualPage();
+    document.body.classList.toggle('potts-live-individual-page', active);
+
+    document.querySelectorAll('.potts-stale-individual-only').forEach(function (element) {
+      element.classList.remove('potts-stale-individual-only');
+    });
+
+    if (active) {
+      return;
+    }
+
+    document.querySelectorAll(
+      '.potts-individual-relationship, .potts-individual-relationship-panel, ' +
+      'main div, main section, main article, main aside'
+    ).forEach(function (element) {
+      const text = normalise(element.textContent || '');
+      if (!text.includes('relationship to you') || !text.includes('this is you')) {
+        return;
+      }
+
+      const smallerMatch = Array.from(element.children).some(function (child) {
+        const childText = normalise(child.textContent || '');
+        return childText.includes('relationship to you') && childText.includes('this is you');
+      });
+
+      if (!smallerMatch) {
+        element.classList.add('potts-stale-individual-only');
+      }
+    });
+  }
+
+  function cleanEmptyStoriesScriptLeak() {
+    if (!isIndividualPage()) {
+      return;
+    }
+
+    const main = document.querySelector('main');
+    const storiesControl = main ? Array.from(main.querySelectorAll('#individual-tabs a, .wt-tabs-individual a')).find(function (control) {
+      return normalise(control.textContent || '') === 'stories';
+    }) : null;
+    const targetId = storiesControl ? (storiesControl.getAttribute('href') || '').replace(/^#/, '') : '';
+    const pane = targetId ? document.getElementById(targetId) : null;
+
+    if (!pane) {
+      return;
+    }
+
+    const walker = document.createTreeWalker(pane, NodeFilter.SHOW_TEXT);
+    const leakedNodes = [];
+    let node = walker.nextNode();
+
+    while (node) {
+      const text = String(node.nodeValue || '');
+      if (text.includes('document.addEventListener') && text.includes('wt-ajax-modal')) {
+        leakedNodes.push(node);
+      }
+      node = walker.nextNode();
+    }
+
+    leakedNodes.forEach(function (textNode) {
+      textNode.nodeValue = '';
+    });
   }
 
   function applyFamilyPopoverClass(menu) {
@@ -1850,7 +2320,7 @@
       return;
     }
 
-    main.querySelectorAll('a[href*="relationship"]').forEach(function (link) {
+    main.querySelectorAll('a[href*="relationship" i]').forEach(function (link) {
       const text = normalise(link.textContent || '');
 
       if (!text || text.length > 60 || link.closest('.wt-family-navigator')) {
@@ -1914,6 +2384,295 @@
       container.classList.add('potts-genealogy-nav');
       genealogyMenu.classList.add('potts-genealogy-menu');
     }
+  }
+
+  let mobileNavigation = null;
+
+  function createMobileNavigation() {
+    if (mobileNavigation) {
+      return mobileNavigation;
+    }
+
+    const header = document.querySelector('.wt-header-wrapper, body > header, header[role="banner"], #header');
+    const genealogyMenu = document.querySelector('.wt-genealogy-menu');
+
+    if (!header || !genealogyMenu) {
+      return null;
+    }
+
+    const labels = window.PottsModernThemeLabels || {};
+    const searchInput = header.querySelector('input[type="search"], input[name="query"], input[name="q"]');
+    const searchForm = searchInput ? (searchInput.closest('form') || searchInput.parentElement) : null;
+    const signInCandidate = Array.from(document.querySelectorAll('a[href]')).find(function (link) {
+      const text = normalise(link.textContent || '').toLowerCase();
+      const href = (link.getAttribute('href') || '').toLowerCase();
+
+      return /^(?:sign in|log in|login)$/.test(text) ||
+        (/(?:login|sign-in|signin)/.test(href) && !/(?:logout|sign-out|signout)/.test(href));
+    });
+    const signInAction = signInCandidate ? document.createElement('a') : null;
+    const signOutCandidate = Array.from(document.querySelectorAll('a[href], button, input[type="submit"]')).find(function (control) {
+      const text = normalise(control.textContent || control.value || '').toLowerCase();
+      const href = (control.getAttribute('href') || '').toLowerCase();
+
+      return /^(?:sign out|log out|logout)$/.test(text) ||
+        /(?:logout|sign-out|signout)/.test(href);
+    });
+    const accountControls = Array.from(header.querySelectorAll('a[href], button')).filter(function (control) {
+      const text = normalise(control.textContent || '').toLowerCase();
+
+      return /^(?:my page|theme|language|sign out|log out|logout)\b/.test(text);
+    });
+    const accountRoots = accountControls.map(function (control) {
+      return control.closest('li, form') || control;
+    }).filter(function (root, index, roots) {
+      return roots.indexOf(root) === index;
+    });
+    let signOutAction = null;
+    let genealogyRoot = genealogyMenu.closest('nav') || genealogyMenu;
+
+    if (signInAction) {
+      signInAction.className = 'potts-mobile-menu-sign-in';
+      signInAction.href = signInCandidate.href;
+      signInAction.textContent = labels.signIn || 'Sign in';
+      signInCandidate.classList.add('potts-mobile-menu-auth-original');
+    }
+
+    if (signOutCandidate) {
+      if (accountRoots.some(function (root) { return root.contains(signOutCandidate); })) {
+        signOutCandidate.classList.add('potts-mobile-menu-sign-out');
+      } else if (signOutCandidate.matches('a[href]')) {
+        signOutAction = document.createElement('a');
+        signOutAction.className = 'potts-mobile-menu-sign-out';
+        signOutAction.href = signOutCandidate.href;
+        signOutAction.textContent = labels.signOut || 'Sign out';
+        signOutCandidate.classList.add('potts-mobile-menu-auth-original');
+      }
+    }
+    const signOutItem = signOutAction ? document.createElement('li') : null;
+
+    if (signOutItem) {
+      signOutItem.append(signOutAction);
+    }
+
+    if (genealogyRoot === header || header.contains(genealogyRoot)) {
+      genealogyRoot = genealogyMenu;
+    }
+
+    const layer = document.createElement('div');
+    layer.className = 'potts-mobile-menu-layer';
+    layer.hidden = true;
+
+    const backdrop = document.createElement('button');
+    backdrop.type = 'button';
+    backdrop.className = 'potts-mobile-menu-backdrop';
+    backdrop.setAttribute('aria-label', labels.closeMenu || 'Close menu');
+    backdrop.tabIndex = -1;
+
+    const drawer = document.createElement('aside');
+    drawer.className = 'potts-mobile-menu-drawer';
+    drawer.id = 'potts-mobile-menu';
+    drawer.setAttribute('role', 'dialog');
+    drawer.setAttribute('aria-modal', 'true');
+    drawer.setAttribute('aria-labelledby', 'potts-mobile-menu-title');
+
+    const drawerHeader = document.createElement('div');
+    drawerHeader.className = 'potts-mobile-menu-header';
+
+    const title = document.createElement('strong');
+    title.id = 'potts-mobile-menu-title';
+    title.textContent = labels.menu || 'Menu';
+
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'potts-mobile-menu-close';
+    closeButton.setAttribute('aria-label', labels.closeMenu || 'Close menu');
+    closeButton.innerHTML = '<span aria-hidden="true"></span>';
+
+    const drawerBody = document.createElement('div');
+    drawerBody.className = 'potts-mobile-menu-body';
+
+    const navigationSection = document.createElement('section');
+    navigationSection.className = 'potts-mobile-menu-section potts-mobile-menu-primary';
+    const navigationHeading = document.createElement('h2');
+    navigationHeading.textContent = labels.explore || 'Explore';
+    navigationSection.append(navigationHeading);
+
+    const utilitySection = document.createElement('section');
+    utilitySection.className = 'potts-mobile-menu-section potts-mobile-menu-utility';
+    const utilityHeading = document.createElement('h2');
+    utilityHeading.textContent = labels.accountSettings || 'Account and settings';
+    utilitySection.append(utilityHeading);
+    const accountMenu = document.createElement('ul');
+    accountMenu.className = 'potts-mobile-account-menu';
+    utilitySection.append(accountMenu);
+
+    drawerHeader.append(title, closeButton);
+    drawer.append(drawerHeader, drawerBody);
+    layer.append(backdrop, drawer);
+    document.body.append(layer);
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'potts-mobile-menu-toggle';
+    toggle.setAttribute('aria-label', labels.openMenu || 'Open menu');
+    toggle.setAttribute('aria-controls', drawer.id);
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = '<span aria-hidden="true"></span>';
+    header.append(toggle);
+
+    const movable = [searchForm, genealogyRoot].concat(accountRoots).filter(function (node, index, nodes) {
+      return node && nodes.indexOf(node) === index;
+    });
+    const positions = movable.map(function (node) {
+      const marker = document.createComment('potts-mobile-menu-position');
+      node.parentNode.insertBefore(marker, node);
+      return { node: node, marker: marker };
+    });
+    const mediaQuery = window.matchMedia('(max-width: 767.98px)');
+    let closeTimer = 0;
+    let previouslyFocused = null;
+
+    function moveIntoDrawer() {
+      if (searchForm) {
+        searchForm.classList.add('potts-mobile-menu-search');
+        drawerBody.append(searchForm);
+      }
+      if (signInAction) {
+        drawerBody.append(signInAction);
+      }
+      accountRoots.forEach(function (root) {
+        accountMenu.append(root);
+      });
+      if (signOutItem) {
+        accountMenu.append(signOutItem);
+      }
+      if (accountRoots.length > 0 || signOutAction) {
+        drawerBody.append(utilitySection);
+      }
+      navigationSection.append(genealogyRoot);
+      drawerBody.append(navigationSection);
+      positions.forEach(function (position) {
+        let parent = position.marker.parentElement;
+        while (parent && parent !== header) {
+          const children = Array.from(parent.children);
+          if (children.length === 0 || children.every(function (child) {
+            return child.classList.contains('potts-mobile-menu-vacant');
+          })) {
+            parent.classList.add('potts-mobile-menu-vacant');
+            parent = parent.parentElement;
+          } else {
+            break;
+          }
+        }
+      });
+      document.body.classList.add('potts-mobile-navigation-ready');
+    }
+
+    function restoreDesktopNavigation() {
+      document.querySelectorAll('.potts-mobile-menu-vacant').forEach(function (element) {
+        element.classList.remove('potts-mobile-menu-vacant');
+      });
+      positions.forEach(function (position) {
+        if (position.marker.parentNode) {
+          position.marker.parentNode.insertBefore(position.node, position.marker.nextSibling);
+        }
+      });
+      document.body.classList.remove('potts-mobile-navigation-ready');
+    }
+
+    function closeMenu(restoreFocus) {
+      window.clearTimeout(closeTimer);
+      layer.classList.remove('is-open');
+      toggle.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('potts-mobile-menu-open');
+
+      closeTimer = window.setTimeout(function () {
+        if (!layer.classList.contains('is-open')) {
+          layer.hidden = true;
+        }
+      }, 220);
+
+      if (restoreFocus !== false && previouslyFocused instanceof HTMLElement) {
+        previouslyFocused.focus();
+      }
+    }
+
+    function openMenu() {
+      window.clearTimeout(closeTimer);
+      previouslyFocused = document.activeElement;
+      layer.hidden = false;
+      window.requestAnimationFrame(function () {
+        layer.classList.add('is-open');
+        toggle.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('potts-mobile-menu-open');
+        closeButton.focus();
+      });
+    }
+
+    function updateMode(event) {
+      const mobile = event ? event.matches : mediaQuery.matches;
+      closeMenu(false);
+      if (mobile) {
+        moveIntoDrawer();
+      } else {
+        restoreDesktopNavigation();
+      }
+    }
+
+    toggle.addEventListener('click', function () {
+      if (layer.classList.contains('is-open')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+    closeButton.addEventListener('click', function () { closeMenu(); });
+    backdrop.addEventListener('click', function () { closeMenu(); });
+
+    drawer.addEventListener('click', function (event) {
+      const target = event.target instanceof Element ? event.target.closest('a') : null;
+      if (target && !target.matches('.dropdown-toggle, [data-bs-toggle="dropdown"]')) {
+        closeMenu(false);
+      }
+    });
+
+    layer.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMenu();
+        return;
+      }
+      if (event.key !== 'Tab') {
+        return;
+      }
+      const focusable = Array.from(drawer.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+        .filter(function (element) { return element.offsetParent !== null; });
+      if (focusable.length === 0) {
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', updateMode);
+    } else {
+      mediaQuery.addListener(updateMode);
+    }
+
+    mobileNavigation = { update: updateMode, close: closeMenu };
+    updateMode();
+    return mobileNavigation;
   }
 
   function findPhotoRibbon() {
@@ -2303,15 +3062,28 @@
     const calendarByUrl = /(?:calendar|anniversary|on-this-day)/.test(locationText);
     const calendarByHeading = /(?:on this day|calendar|anniversaries)/.test(headingText);
 
+    const bookByUrl = /(?:book|chapter)/.test(locationText);
+    const bookByMarkup = Boolean(main.querySelector(
+      'a[href*="chapter"], [class*="book-contents"], [class*="chapter-list"], ' +
+      '[data-chapter], nav[aria-label*="contents" i]'
+    ));
+    const bookByText = /\bbooks?\b/.test(normalise(
+      Array.from(main.querySelectorAll('nav, .breadcrumb, aside')).map(function (element) {
+        return element.textContent || '';
+      }).join(' ')
+    )) && /\bchapter\b/.test(normalise(main.textContent || ''));
+
     const chartPage = chartByUrl || chartByHeading || chartByMarkup;
     const listPage = !chartPage && (listByUrl || listByHeading || listByMarkup);
     const reportPage = !chartPage && (reportByUrl || reportByHeading || reportByMarkup);
     const calendarPage = calendarByUrl || calendarByHeading;
+    const bookPage = bookByUrl || bookByMarkup || bookByText;
 
     document.body.classList.toggle('potts-chart-page', chartPage);
     document.body.classList.toggle('potts-list-page', listPage);
     document.body.classList.toggle('potts-report-page', reportPage);
     document.body.classList.toggle('potts-calendar-page', calendarPage);
+    document.body.classList.toggle('potts-book-page', bookPage);
 
     const structured = chartPage || listPage || reportPage || calendarPage;
     document.body.classList.toggle('potts-structured-page', structured);
@@ -2503,10 +3275,294 @@
 
   let refreshPending = false;
 
+  function isMobileIndividualPage() {
+    return isIndividualPage() && window.matchMedia('(max-width: 767.98px)').matches;
+  }
+
+  const mobileFactsBatchSize = 12;
+
+  function mobileFactRowsAvailableForBatching(table) {
+    const factRows = directFactRows(table).filter(function (row) {
+      return row.classList.contains('potts-mobile-fact-row');
+    });
+
+    return factRows.filter(function (row) {
+      const inlineDisplay = String(row.style.getPropertyValue('display') || '').toLowerCase();
+
+      return !row.hidden &&
+        !row.classList.contains('d-none') &&
+        !row.classList.contains('potts-hidden-by-history-filter') &&
+        row.getAttribute('aria-hidden') !== 'true' &&
+        !(row.classList.contains('collapse') && !row.classList.contains('show')) &&
+        inlineDisplay !== 'none';
+    });
+  }
+
+  function applyMobileFactsBatch(table, button) {
+    const allFactRows = directFactRows(table).filter(function (row) {
+      return row.classList.contains('potts-mobile-fact-row');
+    });
+    const factRows = mobileFactRowsAvailableForBatching(table);
+    const availableRows = new Set(factRows);
+    const storedCount = Number.parseInt(table.dataset.pottsVisibleFacts || '', 10);
+    const visibleCount = Number.isFinite(storedCount)
+      ? Math.min(Math.max(storedCount, mobileFactsBatchSize), factRows.length)
+      : Math.min(mobileFactsBatchSize, factRows.length);
+    const labels = window.PottsModernThemeLabels || {};
+
+    table.dataset.pottsVisibleFacts = String(visibleCount);
+    let availableIndex = 0;
+    allFactRows.forEach(function (row) {
+      if (!availableRows.has(row)) {
+        row.classList.remove('potts-mobile-batch-hidden');
+        return;
+      }
+
+      row.classList.toggle('potts-mobile-batch-hidden', availableIndex >= visibleCount);
+      availableIndex += 1;
+    });
+
+    const allVisible = visibleCount >= factRows.length;
+    button.hidden = factRows.length <= mobileFactsBatchSize;
+    button.setAttribute('aria-expanded', allVisible ? 'true' : 'false');
+    button.textContent = allVisible
+      ? (labels.showFewerEvents || 'Show fewer events')
+      : (labels.showMoreEvents || 'Show more events');
+  }
+
+  function installMobileFactsLimiter() {
+    if (!isMobileIndividualPage()) {
+      return true;
+    }
+
+    const main = document.querySelector('main');
+    const root = getFactsRoot();
+    const table = primaryFactsTable(root);
+
+    if (!main || !table) {
+      return false;
+    }
+
+    table.classList.add('potts-mobile-primary-facts');
+
+    const rows = directFactRows(table);
+
+    rows.forEach(function (row) {
+      if (row.querySelector('input[type="checkbox"]')) {
+        row.classList.add('potts-mobile-facts-filter-row');
+      } else if (row.children.length >= 2) {
+        row.classList.add('potts-mobile-fact-row');
+      }
+    });
+
+    let button = main.querySelector('.potts-mobile-facts-toggle');
+    if (!button) {
+      button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn potts-mobile-facts-toggle';
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const activeTable = primaryFactsTable(getFactsRoot());
+        if (!activeTable) {
+          return;
+        }
+
+        const factRows = mobileFactRowsAvailableForBatching(activeTable);
+        const currentCount = Number.parseInt(activeTable.dataset.pottsVisibleFacts || '', 10) || mobileFactsBatchSize;
+        const nextCount = currentCount >= factRows.length
+          ? mobileFactsBatchSize
+          : Math.min(currentCount + mobileFactsBatchSize, factRows.length);
+
+        activeTable.dataset.pottsVisibleFacts = String(nextCount);
+        applyMobileFactsBatch(activeTable, button);
+      });
+    }
+
+    if (button.previousElementSibling !== table) {
+      table.insertAdjacentElement('afterend', button);
+    }
+
+    document.body.classList.add('potts-mobile-facts-ready');
+    document.body.classList.remove('potts-show-all-mobile-facts');
+    applyMobileFactsBatch(table, button);
+
+    return true;
+  }
+
+
+
+  function factFilterStateByLabel(factRoot, labelWords) {
+    if (!factRoot) {
+      return true;
+    }
+
+    const labelsToFind = labelWords.map(function (value) {
+      return normalise(value);
+    });
+
+    const checkboxes = Array.from(factRoot.querySelectorAll('input[type="checkbox"]'));
+    for (const checkbox of checkboxes) {
+      let labelText = '';
+      const explicitLabel = checkbox.id ? factRoot.querySelector('label[for="' + CSS.escape(checkbox.id) + '"]') : null;
+      const wrappingLabel = checkbox.closest('label');
+      const parent = checkbox.parentElement;
+
+      if (explicitLabel) {
+        labelText += ' ' + (explicitLabel.textContent || '');
+      }
+      if (wrappingLabel) {
+        labelText += ' ' + (wrappingLabel.textContent || '');
+      }
+      if (parent) {
+        labelText += ' ' + (parent.textContent || '');
+      }
+
+      labelText = normalise(labelText);
+      if (labelsToFind.some(function (label) { return labelText.includes(label); })) {
+        return checkbox.checked;
+      }
+    }
+
+    return true;
+  }
+
+  function rowLooksLikeHistoricalFact(row) {
+    if (!row || !row.matches || !row.matches('tr')) {
+      return false;
+    }
+
+    if (row.querySelector('input[type="checkbox"]')) {
+      return false;
+    }
+
+    const firstCell = row.querySelector('th, td');
+    const firstText = normalise(firstCell ? firstCell.textContent || '' : '');
+    const rowClass = normalise(row.className || '');
+
+    if (row.querySelector('.potts-history-event-type, .potts-history-event-age')) {
+      return true;
+    }
+
+    if (rowClass.includes('histor') || rowClass.includes('history')) {
+      return true;
+    }
+
+    return firstText.includes('australian history') ||
+      firstText.includes('historic event') ||
+      firstText.includes('historical event') ||
+      firstText.includes('historical fact') ||
+      firstText.includes('historical facts');
+  }
+
+  function synchroniseHistoricalFactVisibility() {
+    if (!isIndividualPage()) {
+      return;
+    }
+
+    const factRoot = getFactsRoot();
+    if (!factRoot) {
+      return;
+    }
+
+    const showHistorical = factFilterStateByLabel(factRoot, [
+      'historic events', 'historical events', 'historical facts', 'historic facts'
+    ]);
+
+    factRoot.querySelectorAll('tr').forEach(function (row) {
+      if (!rowLooksLikeHistoricalFact(row)) {
+        return;
+      }
+
+      row.classList.toggle('potts-hidden-by-history-filter', !showHistorical);
+      if (!showHistorical) {
+        row.style.setProperty('display', 'none', 'important');
+      } else {
+        row.style.removeProperty('display');
+      }
+    });
+  }
+
+  function cleanLeakedInlineScriptText() {
+    const main = document.querySelector('main');
+    if (!main) {
+      return;
+    }
+
+    const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        const parent = node.parentElement;
+        const text = String(node.nodeValue || '');
+
+        if (!parent || parent.closest('script, style, textarea, code, pre')) {
+          return NodeFilter.FILTER_REJECT;
+        }
+
+        return text.includes('document.addEventListener') && text.includes('wt-ajax-modal')
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_REJECT;
+      }
+    });
+
+    const nodes = [];
+    let node = walker.nextNode();
+    while (node) {
+      nodes.push(node);
+      node = walker.nextNode();
+    }
+
+    nodes.forEach(function (textNode) {
+      const parent = textNode.parentElement;
+      textNode.nodeValue = '';
+      if (parent && normalise(parent.textContent || '') === '') {
+        parent.classList.add('potts-empty-script-leak');
+      }
+    });
+  }
+
   function runEnhancements() {
     refreshPending = false;
+    cleanIndividualCarryover();
     enhanceSiteShell();
+    createMobileNavigation();
     enhanceHistoryRegionMenuLink();
+
+    if (isIndividualPage()) {
+      cleanIncorrectFactEnhancements();
+      replaceDefaultSilhouettes();
+      enhanceIndividualIdentityCard();
+      enhanceIndividualRelationshipPanel();
+      enhanceFamilyNavigator();
+
+      const factsRoot = getFactsRoot();
+
+      if (!isMobileIndividualPage()) {
+        const factRows = factsRoot ? factsRoot.querySelectorAll('tr').length : 0;
+
+        if (factRows < 60) {
+          resetNestedFactEnhancements();
+          enhanceFactCells();
+          resetNestedFactEnhancements();
+          renderReliableFactIcons();
+        }
+      }
+
+      // Apply shape and semantic colour after optional reconstruction so its
+      // legacy inline parchment colour cannot override event-group colours.
+      markResponsiveFactTiles(factsRoot);
+
+      synchroniseHistoricalFactVisibility();
+      installMobileFactsLimiter();
+      enhanceIndividualLayout();
+      positionMobileIndividualSidebar();
+      cleanEmptyStoriesScriptLeak();
+      cleanLeakedInlineScriptText();
+      enhanceFamilyPopovers();
+      enhanceRelationshipLinks();
+      return;
+    }
+
     enhanceStructuredPages();
     enhanceDashboardPage();
     enhanceRecordAndNarrativePages();
@@ -2514,17 +3570,8 @@
     enhanceEditingExperience();
     enhanceMessagesAndNewsBlocks();
     enhanceUtilityPages();
-    cleanIncorrectFactEnhancements();
     replaceDefaultSilhouettes();
-    enhanceIndividualIdentityCard();
-    enhanceFamilyNavigator();
-    resetNestedFactEnhancements();
-    enhanceFactCells();
-    resetNestedFactEnhancements();
-    renderReliableFactIcons();
-    enhanceIndividualLayout();
     enhanceFamilyPopovers();
-    enhanceRelationshipLinks();
   }
 
   function scheduleEnhancements() {
@@ -2537,7 +3584,28 @@
   }
 
   function start() {
+    let factsLimiterPoll = 0;
+
+    if (isMobileIndividualPage()) {
+      document.body.classList.add('potts-mobile-fact-limit');
+      factsLimiterPoll = window.setInterval(function () {
+        if (installMobileFactsLimiter()) {
+          window.clearInterval(factsLimiterPoll);
+        }
+      }, 1000);
+      window.setTimeout(function () {
+        window.clearInterval(factsLimiterPoll);
+      }, 120000);
+    }
+
     runEnhancements();
+    watchForMobileIndividualLayout();
+
+    if (isMobileIndividualPage()) {
+      [100, 300, 800, 1600, 3000, 6000].forEach(function (delay) {
+        window.setTimeout(positionMobileIndividualSidebar, delay);
+      });
+    }
 
     // The individual portrait can be added by webtrees/AJAX slightly after the
     // first theme pass, so retry the silhouette replacement a few times.
@@ -2585,7 +3653,7 @@
       }
 
       if (target.closest('[data-bs-toggle=\"tab\"], [role=\"tab\"], .nav-tabs a, .wt-tabs a, [data-bs-toggle=\"collapse\"], .accordion-button')) {
-        [80, 260].forEach(function (delay) {
+        [80, 350].forEach(function (delay) {
           window.setTimeout(scheduleEnhancements, delay);
         });
       }
@@ -2594,6 +3662,21 @@
     document.addEventListener('shown.bs.tab', scheduleEnhancements, true);
     document.addEventListener('shown.bs.collapse', scheduleEnhancements, true);
     document.addEventListener('shown.bs.modal', scheduleEnhancements, true);
+
+    document.addEventListener('change', function (event) {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target && target.matches('input[type=\"checkbox\"]') && isInsideFactsRoot(target)) {
+        synchroniseHistoricalFactVisibility();
+        scheduleEnhancements();
+      }
+    }, true);
+
+    const individualMobileQuery = window.matchMedia('(max-width: 767.98px)');
+    if (typeof individualMobileQuery.addEventListener === 'function') {
+      individualMobileQuery.addEventListener('change', scheduleEnhancements);
+    } else if (typeof individualMobileQuery.addListener === 'function') {
+      individualMobileQuery.addListener(scheduleEnhancements);
+    }
   }
 
   if (document.readyState === 'loading') {

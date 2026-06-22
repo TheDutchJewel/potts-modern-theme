@@ -8529,3 +8529,1894 @@ img.potts-modern-chart-silhouette {
 .tv_box img.potts-modern-chart-silhouette {
   margin: 0 0.35rem 0 0 !important;
 }
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.14
+   Purpose-built mobile navigation
+   ------------------------------------------------------------ */
+
+.potts-mobile-menu-toggle,
+.potts-mobile-menu-layer {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  body.potts-mobile-menu-open {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+  }
+
+  .potts-site-shell {
+    position: relative !important;
+    min-height: 4.25rem !important;
+    padding-right: 4.75rem !important;
+  }
+
+  .potts-site-shell .potts-site-brand {
+    max-width: calc(100vw - 6rem) !important;
+    margin: 0 !important;
+    font-size: clamp(1.35rem, 6.5vw, 1.8rem) !important;
+    line-height: 1.15 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .potts-site-shell .potts-mobile-menu-vacant {
+    display: none !important;
+  }
+
+  .potts-mobile-menu-toggle {
+    position: absolute !important;
+    z-index: 1040 !important;
+    top: 50% !important;
+    right: max(0.8rem, env(safe-area-inset-right)) !important;
+    display: inline-grid !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    min-height: 3rem !important;
+    place-items: center !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.42) !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .potts-mobile-menu-toggle > span,
+  .potts-mobile-menu-toggle > span::before,
+  .potts-mobile-menu-toggle > span::after {
+    display: block !important;
+    width: 1.45rem !important;
+    height: 2px !important;
+    border-radius: 2px !important;
+    background: currentColor !important;
+    content: "" !important;
+    transition: transform 180ms ease, opacity 180ms ease !important;
+  }
+
+  .potts-mobile-menu-toggle > span {
+    position: relative !important;
+  }
+
+  .potts-mobile-menu-toggle > span::before {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: translateY(-0.45rem) !important;
+  }
+
+  .potts-mobile-menu-toggle > span::after {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: translateY(0.45rem) !important;
+  }
+
+  .potts-mobile-menu-toggle.is-open > span {
+    background: transparent !important;
+  }
+
+  .potts-mobile-menu-toggle.is-open > span::before {
+    transform: rotate(45deg) !important;
+  }
+
+  .potts-mobile-menu-toggle.is-open > span::after {
+    transform: rotate(-45deg) !important;
+  }
+
+  .potts-mobile-menu-layer {
+    position: fixed !important;
+    z-index: 1055 !important;
+    inset: 0 !important;
+    display: block !important;
+    pointer-events: none !important;
+  }
+
+  .potts-mobile-menu-layer[hidden] {
+    display: none !important;
+  }
+
+  .potts-mobile-menu-layer.is-open {
+    pointer-events: auto !important;
+  }
+
+  .potts-mobile-menu-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: rgba(18, 34, 42, 0.56) !important;
+    opacity: 0 !important;
+    transition: opacity 180ms ease !important;
+  }
+
+  .potts-mobile-menu-layer.is-open .potts-mobile-menu-backdrop {
+    opacity: 1 !important;
+  }
+
+  .potts-mobile-menu-drawer {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: min(92vw, 26rem) !important;
+    height: 100dvh !important;
+    max-height: 100% !important;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) 0 !important;
+    overflow: hidden !important;
+    background: #fffdf8 !important;
+    box-shadow: -18px 0 44px rgba(18, 34, 42, 0.24) !important;
+    color: var(--potts-ink) !important;
+    transform: translateX(102%) !important;
+    transition: transform 220ms ease !important;
+  }
+
+  .potts-mobile-menu-layer.is-open .potts-mobile-menu-drawer {
+    transform: translateX(0) !important;
+  }
+
+  .potts-mobile-menu-header {
+    display: flex !important;
+    min-height: 4.25rem !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.7rem 0.75rem 0.7rem 1.1rem !important;
+    border-bottom: 1px solid var(--potts-line) !important;
+    background: var(--potts-blue-dark) !important;
+    color: #fff !important;
+  }
+
+  .potts-mobile-menu-header strong {
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+  }
+
+  .potts-mobile-menu-close {
+    display: grid !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    min-height: 3rem !important;
+    place-items: center !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+  }
+
+  .potts-mobile-menu-close > span,
+  .potts-mobile-menu-close > span::after {
+    display: block !important;
+    width: 1.4rem !important;
+    height: 2px !important;
+    border-radius: 2px !important;
+    background: currentColor !important;
+    content: "" !important;
+    transform: rotate(45deg) !important;
+  }
+
+  .potts-mobile-menu-close > span {
+    position: relative !important;
+  }
+
+  .potts-mobile-menu-close > span::after {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: rotate(90deg) !important;
+  }
+
+  .potts-mobile-menu-body {
+    flex: 1 1 auto !important;
+    padding: 1rem !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .potts-mobile-menu-search {
+    display: flex !important;
+    width: 100% !important;
+    margin: 0 0 1rem !important;
+  }
+
+  .potts-mobile-menu-search input {
+    min-width: 0 !important;
+    min-height: 3rem !important;
+    border: 1px solid var(--potts-line) !important;
+    box-shadow: none !important;
+  }
+
+  .potts-mobile-menu-search button {
+    min-width: 3rem !important;
+    min-height: 3rem !important;
+  }
+
+  .potts-mobile-menu-section {
+    margin: 0 0 1.25rem !important;
+  }
+
+  .potts-mobile-menu-section h2 {
+    margin: 0 0 0.45rem !important;
+    color: var(--potts-muted) !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+  }
+
+  .potts-mobile-menu-primary > nav,
+  .potts-mobile-menu-primary .wt-genealogy-menu,
+  .potts-mobile-menu-primary .navbar-collapse,
+  .potts-mobile-menu-primary .wt-menu,
+  .potts-mobile-menu-primary .wt-main-menu {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .potts-mobile-menu-primary ul,
+  .potts-mobile-menu-utility ul {
+    display: flex !important;
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.35rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .potts-mobile-menu-primary li,
+  .potts-mobile-menu-utility li {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .potts-mobile-menu-primary .potts-nav-feature-link,
+  .potts-mobile-menu-primary a.potts-modern-icon-link,
+  .potts-mobile-menu-primary .wt-genealogy-menu > li > a,
+  .potts-mobile-menu-utility a,
+  .potts-mobile-menu-utility button {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 3.25rem !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.8rem !important;
+    margin: 0 !important;
+    padding: 0.65rem 0.75rem !important;
+    border: 1px solid rgba(35, 48, 56, 0.1) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    color: var(--potts-blue-dark) !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    text-align: left !important;
+    white-space: normal !important;
+    transform: none !important;
+  }
+
+  .potts-mobile-menu-primary .potts-nav-icon,
+  .potts-mobile-menu-primary a.potts-modern-icon-link::before {
+    width: 1.7rem !important;
+    height: 1.7rem !important;
+    flex: 0 0 1.7rem !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    background-size: 1.55rem 1.55rem !important;
+    box-shadow: none !important;
+  }
+
+  .potts-mobile-menu-primary .potts-nav-label {
+    flex: 1 1 auto !important;
+    text-align: left !important;
+  }
+
+  .potts-mobile-menu-primary .dropdown-toggle::after,
+  .potts-mobile-menu-utility .dropdown-toggle::after {
+    margin-left: auto !important;
+  }
+
+  .potts-mobile-menu-primary .dropdown-menu,
+  .potts-mobile-menu-utility .dropdown-menu {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0.35rem 0 0 !important;
+    padding: 0.35rem 0 0.35rem 0.8rem !important;
+    border: 0 !important;
+    border-left: 2px solid rgba(24, 90, 113, 0.2) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .potts-mobile-menu-primary .dropdown-item,
+  .potts-mobile-menu-utility .dropdown-item {
+    min-height: 2.8rem !important;
+    padding: 0.6rem 0.7rem !important;
+    border-radius: 7px !important;
+    background: rgba(255, 255, 255, 0.72) !important;
+    color: var(--potts-blue-dark) !important;
+  }
+
+  .potts-mobile-menu-utility .potts-utility-menu {
+    display: flex !important;
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.35rem !important;
+  }
+}
+
+@media (max-width: 767.98px) and (prefers-reduced-motion: reduce) {
+  .potts-mobile-menu-drawer,
+  .potts-mobile-menu-backdrop,
+  .potts-mobile-menu-toggle > span,
+  .potts-mobile-menu-toggle > span::before,
+  .potts-mobile-menu-toggle > span::after {
+    transition: none !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.15
+   Individual page and Facts and events on phones
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  body.potts-record-page .potts-individual-identity,
+  body:has(.wt-individual-page) .potts-individual-identity {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: .8rem !important;
+    padding: .8rem !important;
+  }
+
+  body.potts-record-page .potts-individual-names,
+  body:has(.wt-individual-page) .potts-individual-names,
+  body.potts-record-page .potts-individual-relationship,
+  body:has(.wt-individual-page) .potts-individual-relationship {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding-inline: 0 !important;
+  }
+
+  body.potts-record-page .potts-individual-names :is(h1, h2, .wt-page-title),
+  body:has(.wt-individual-page) .potts-individual-names :is(h1, h2, .wt-page-title) {
+    max-width: 100% !important;
+    margin-inline: 0 !important;
+    font-size: clamp(1.8rem, 8.5vw, 2.35rem) !important;
+    line-height: 1.08 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+
+  body.potts-record-page .potts-individual-relationship,
+  body:has(.wt-individual-page) .potts-individual-relationship {
+    margin-top: .1rem !important;
+  }
+
+  body.potts-record-page .potts-individual-relationship *,
+  body:has(.wt-individual-page) .potts-individual-relationship * {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+
+  body.potts-record-page .potts-individual-relationship :is(.card, .alert, section, article),
+  body:has(.wt-individual-page) .potts-individual-relationship :is(.card, .alert, section, article) {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Use the reliable class added to the detected facts root. */
+  body.potts-record-page .potts-facts-root,
+  body:has(.wt-individual-page) .potts-facts-root {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+  }
+
+  body.potts-record-page .potts-facts-root .wt-facts-table,
+  body.potts-record-page .potts-facts-root table.facts_table,
+  body:has(.wt-individual-page) .potts-facts-root .wt-facts-table,
+  body:has(.wt-individual-page) .potts-facts-root table.facts_table,
+  body.potts-record-page .potts-facts-root .wt-facts-table > tbody,
+  body.potts-record-page .potts-facts-root table.facts_table > tbody,
+  body:has(.wt-individual-page) .potts-facts-root .wt-facts-table > tbody,
+  body:has(.wt-individual-page) .potts-facts-root table.facts_table > tbody {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+    border-spacing: 0 !important;
+  }
+
+  body.potts-record-page .potts-facts-root colgroup,
+  body:has(.wt-individual-page) .potts-facts-root colgroup {
+    display: none !important;
+  }
+
+  body.potts-record-page .potts-events-filter,
+  body:has(.wt-individual-page) .potts-events-filter {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-wrap: wrap !important;
+    gap: .45rem .7rem !important;
+    padding: .7rem .75rem !important;
+  }
+
+  body.potts-record-page .potts-events-filter label,
+  body:has(.wt-individual-page) .potts-events-filter label {
+    display: inline-flex !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    gap: .35rem !important;
+    margin: 0 !important;
+    font-size: .92rem !important;
+    line-height: 1.3 !important;
+    white-space: normal !important;
+  }
+
+  body.potts-record-page .potts-facts-root .potts-top-level-fact-row,
+  body:has(.wt-individual-page) .potts-facts-root .potts-top-level-fact-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 .85rem !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .14) !important;
+    border-left: 4px solid rgba(185, 134, 56, .82) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-shadow: 0 7px 18px rgba(35, 48, 56, .065) !important;
+  }
+
+  body.potts-record-page .potts-facts-root .potts-fact-summary-cell,
+  body.potts-record-page .potts-facts-root .potts-fact-detail-cell,
+  body:has(.wt-individual-page) .potts-facts-root .potts-fact-summary-cell,
+  body:has(.wt-individual-page) .potts-facts-root .potts-fact-detail-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+
+  body.potts-record-page .potts-facts-root .potts-fact-summary-cell,
+  body:has(.wt-individual-page) .potts-facts-root .potts-fact-summary-cell {
+    padding: .42rem .55rem .3rem !important;
+    border-bottom: 1px solid rgba(61, 83, 64, .11) !important;
+    background: #f5ecda !important;
+  }
+
+  body.potts-record-page .potts-facts-root .potts-fact-summary-cell > .potts-event-title-panel,
+  body:has(.wt-individual-page) .potts-facts-root .potts-fact-summary-cell > .potts-event-title-panel {
+    justify-content: flex-start !important;
+    max-width: 100% !important;
+    margin: .2rem 0 .35rem !important;
+    padding: .38rem .45rem !important;
+    text-align: left !important;
+  }
+
+  body.potts-record-page .potts-facts-root .potts-fact-detail-cell,
+  body:has(.wt-individual-page) .potts-facts-root .potts-fact-detail-cell {
+    padding: .72rem .78rem .85rem !important;
+    background: #fff !important;
+    font-size: .98rem !important;
+    line-height: 1.48 !important;
+  }
+
+  body.potts-record-page .potts-facts-root .potts-fact-detail-cell img,
+  body:has(.wt-individual-page) .potts-facts-root .potts-fact-detail-cell img {
+    max-width: min(100%, 130px) !important;
+    height: auto !important;
+  }
+
+  body.potts-record-page .potts-facts-root .potts-fact-detail-cell a,
+  body:has(.wt-individual-page) .potts-facts-root .potts-fact-detail-cell a {
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+}
+
+/* Beta 16 uses JavaScript markers taken from the live relationship link. */
+@media (max-width: 767.98px) {
+  main .potts-individual-relationship-row {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: .8rem !important;
+    margin-inline: 0 !important;
+  }
+
+  main .potts-individual-relationship-row > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    margin-inline: 0 !important;
+  }
+
+  main .potts-individual-relationship-panel {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding-inline: 0 !important;
+    float: none !important;
+  }
+
+  main .potts-individual-relationship-panel > :is(.card, .alert, section, article, div) {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin-inline: 0 !important;
+  }
+
+  main .potts-individual-relationship-node {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.25
+   Lightweight mobile Facts and events list
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  /* Limit the initial paint before the delayed facts enhancement runs. */
+  body.potts-mobile-fact-limit:not(.potts-mobile-facts-ready) main .wt-tab-facts > .wt-facts-table > tbody > tr:nth-child(n + 14),
+  body.potts-mobile-fact-limit:not(.potts-mobile-facts-ready) main #facts_content > .wt-facts-table > tbody > tr:nth-child(n + 14),
+  body.potts-mobile-fact-limit:not(.potts-mobile-facts-ready) main [id*="personal_facts"] > .wt-facts-table > tbody > tr:nth-child(n + 14) {
+    display: none !important;
+  }
+
+  main table.potts-mobile-primary-facts,
+  main table.potts-mobile-primary-facts > tbody {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  main table.potts-mobile-primary-facts > colgroup {
+    display: none !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-facts-filter-row {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 .85rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-facts-filter-row > td {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-wrap: wrap !important;
+    gap: .5rem .85rem !important;
+    padding: .75rem !important;
+    border: 1px solid rgba(35, 83, 97, .13) !important;
+    border-radius: 8px !important;
+    background: #f5ecda !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-facts-filter-row label {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: .35rem !important;
+    margin: 0 !important;
+    font-size: .96rem !important;
+    line-height: 1.3 !important;
+    white-space: normal !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 .8rem !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(35, 83, 97, .14) !important;
+    border-left: 4px solid #cf9a44 !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    box-shadow: 0 5px 14px rgba(35, 48, 56, .055) !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :is(th, td) {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    padding: .72rem .8rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :first-child {
+    border-bottom: 1px solid rgba(35, 83, 97, .11) !important;
+    background: #f5ecda !important;
+    color: #21323b !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    text-align: left !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :not(:first-child) {
+    font-size: .98rem !important;
+    line-height: 1.48 !important;
+    text-align: left !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row img {
+    display: block !important;
+    max-width: min(100%, 150px) !important;
+    height: auto !important;
+    margin: .65rem 0 .3rem !important;
+    float: none !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-batch-hidden {
+    display: none !important;
+  }
+
+  main .potts-mobile-facts-toggle {
+    display: block !important;
+    position: relative !important;
+    z-index: 5 !important;
+    width: min(100%, 20rem) !important;
+    min-height: 2.8rem !important;
+    margin: .25rem auto 1.25rem !important;
+    padding: .65rem 1rem !important;
+    border: 1px solid rgba(18, 92, 111, .28) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    color: #125c6f !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: rgba(18, 92, 111, .12) !important;
+  }
+
+  main .potts-mobile-facts-toggle[hidden] {
+    display: none !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.26
+   Mobile individual-page visual refinement
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  /* A predictable grid is easier to scan than variably sized pills. */
+  main .potts-individual-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: .45rem !important;
+    width: 100% !important;
+    margin: 0 0 .85rem !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+  }
+
+  main .potts-individual-tabs > .nav-item {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  main .potts-individual-tabs .nav-link {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 3rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: .55rem .45rem !important;
+    border: 1px solid rgba(35, 83, 97, .16) !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, .88) !important;
+    color: #596771 !important;
+    font-size: .93rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    box-shadow: none !important;
+  }
+
+  main .potts-individual-tabs .nav-link.active,
+  main .potts-individual-tabs .nav-link[aria-selected="true"] {
+    border-color: #155e75 !important;
+    background: #155e75 !important;
+    color: #fff !important;
+  }
+
+  main .potts-individual-tab-panel {
+    padding: .75rem !important;
+    border-radius: 8px !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-facts-filter-row > td {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: .55rem .7rem !important;
+    padding: .68rem !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-facts-filter-row label {
+    align-items: flex-start !important;
+    font-size: .88rem !important;
+    line-height: 1.25 !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row {
+    margin-bottom: .7rem !important;
+    box-shadow: 0 4px 12px rgba(35, 48, 56, .045) !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :first-child {
+    min-height: 3rem !important;
+    padding: .62rem .75rem !important;
+    font-size: 1rem !important;
+    text-align: left !important;
+  }
+
+  /* Remove inherited Xenea artwork which appears as a large crescent. */
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :first-child,
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :first-child * {
+    background-image: none !important;
+    box-shadow: none !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :first-child::before,
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :first-child::after,
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :first-child > *::before,
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :first-child > *::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :first-child > :is(img, svg) {
+    display: none !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row > :not(:first-child) {
+    padding: .68rem .75rem .78rem !important;
+    font-size: .93rem !important;
+    line-height: 1.42 !important;
+  }
+
+  main table.potts-mobile-primary-facts .potts-mobile-fact-row a:has(img) {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row img {
+    max-width: min(100%, 170px) !important;
+    margin: .55rem 0 .35rem !important;
+  }
+
+  /* Each relative is one compact card, rather than two squeezed columns. */
+  main .wt-family-navigator table,
+  main .wt-family-navigator tbody {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  main .wt-family-navigator colgroup {
+    display: none !important;
+  }
+
+  main .potts-family-person-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 .65rem !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .16) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+  }
+
+  main .potts-family-person-row > .potts-family-role-cell,
+  main .potts-family-person-row > .potts-family-person-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    text-align: left !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+
+  main .potts-family-person-row > .potts-family-role-cell {
+    padding: .52rem .7rem !important;
+    border-left: 4px solid #82967f !important;
+    border-bottom: 1px solid rgba(61, 83, 64, .12) !important;
+    background: #e3eadf !important;
+    color: #354b3b !important;
+    font-size: .9rem !important;
+    line-height: 1.3 !important;
+  }
+
+  main .potts-family-person-row > .potts-family-role-cell.potts-family-self-cell {
+    border-left-color: #b98638 !important;
+    background: #efe3cb !important;
+    color: #4d3b21 !important;
+  }
+
+  main .potts-family-person-row > .potts-family-person-cell {
+    padding: .62rem .72rem .68rem !important;
+    background: #fff !important;
+    color: #26343c !important;
+    font-size: .94rem !important;
+    line-height: 1.4 !important;
+  }
+
+  main .potts-family-person-cell a {
+    font-weight: 700 !important;
+    text-decoration-thickness: 1px !important;
+    text-underline-offset: 2px !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.27
+   Mobile authentication, Families and Sources
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  .potts-mobile-menu-sign-in {
+    display: flex !important;
+    width: 100% !important;
+    min-height: 3.25rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 0 1rem !important;
+    padding: .68rem 1rem !important;
+    border: 1px solid #155e75 !important;
+    border-radius: 8px !important;
+    background: #155e75 !important;
+    color: #fff !important;
+    font-size: 1rem !important;
+    font-weight: 750 !important;
+    line-height: 1.2 !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+  }
+
+  main .potts-mobile-families,
+  main .potts-mobile-family-table,
+  main .potts-mobile-family-table > tbody {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-inline: 0 !important;
+    border-spacing: 0 !important;
+    background: transparent !important;
+  }
+
+  main .potts-mobile-family-table > colgroup {
+    display: none !important;
+  }
+
+  main .potts-mobile-family-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 .75rem !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .15) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+  }
+
+  main .potts-mobile-family-row > .potts-mobile-family-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: .68rem .72rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+
+  main .potts-mobile-family-row > .potts-mobile-family-cell:first-child:not(:only-child) {
+    border-left: 4px solid #cf9a44 !important;
+    border-bottom: 1px solid rgba(61, 83, 64, .12) !important;
+    background: #f5ecda !important;
+    color: #26343c !important;
+    font-weight: 750 !important;
+  }
+
+  main :is(.potts-mobile-families, .wt-tab-relatives) :is(
+    .person_box,
+    .person_boxF,
+    .person_boxM,
+    .person_boxNN,
+    .person_box_template
+  ) {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: .65rem !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+  }
+
+  main :is(.potts-mobile-families, .wt-tab-relatives) :is(
+    .person_box,
+    .person_boxF,
+    .person_boxM,
+    .person_boxNN,
+    .person_box_template
+  ) * {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+
+  main :is(.wt-tab-sources, .wt-tab-notes) > .wt-facts-table,
+  main :is(.wt-tab-sources, .wt-tab-notes) > .wt-facts-table > tbody {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  main :is(.wt-tab-sources, .wt-tab-notes) > .wt-facts-table > colgroup {
+    display: none !important;
+  }
+
+  main :is(.wt-tab-sources, .wt-tab-notes) > .wt-facts-table > tbody > tr:not(:first-child) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    border-top: 1px solid rgba(61, 83, 64, .1) !important;
+  }
+
+  main :is(.wt-tab-sources, .wt-tab-notes) > .wt-facts-table > tbody > tr:not(:first-child) > :is(th, td) {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: .65rem .72rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+
+  main :is(.wt-tab-sources, .wt-tab-notes) > .wt-facts-table > tbody > tr:not(:first-child) > :first-child {
+    border-left: 4px solid #cf9a44 !important;
+    background: #f5ecda !important;
+    color: #26343c !important;
+    font-weight: 750 !important;
+  }
+
+  main :is(.wt-tab-sources, .wt-tab-notes) > .wt-facts-table > tbody > tr:not(:first-child) > :not(:first-child) {
+    background: #fff !important;
+    color: #34434a !important;
+    font-size: .93rem !important;
+    line-height: 1.42 !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.28
+   Mobile event filtering and account exit
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  .potts-mobile-menu-utility .potts-mobile-menu-auth-original,
+  .potts-mobile-menu-auth-original {
+    display: none !important;
+  }
+
+  .potts-mobile-menu-utility .potts-mobile-menu-sign-out,
+  .potts-mobile-menu-sign-out {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 3.1rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: .45rem 0 0 !important;
+    padding: .65rem .8rem !important;
+    border: 1px solid rgba(131, 52, 52, .38) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    color: #7b3030 !important;
+    font-size: .95rem !important;
+    font-weight: 750 !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+  }
+
+  .potts-mobile-menu-utility .potts-mobile-account-menu {
+    display: flex !important;
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: .35rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+
+  .potts-mobile-menu-utility .potts-mobile-account-menu > :is(li, form) {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* webtrees hides unchecked event categories with one of these states.
+     This must outrank the grid display used by the mobile event cards. */
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row[hidden],
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row.d-none,
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row[aria-hidden="true"],
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row[style*="display: none"],
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row[style*="display:none"] {
+    display: none !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.30
+   Book chapter selection
+   ------------------------------------------------------------ */
+
+body.potts-book-page main :is(
+  .list-group-item.active,
+  .nav-link.active,
+  a.active,
+  [aria-current="page"]
+),
+body.potts-book-page main :is(li, .list-group-item).active > a {
+  border-color: #155e75 !important;
+  background: #155e75 !important;
+  color: #fff !important;
+  font-weight: 750 !important;
+  text-decoration: none !important;
+  box-shadow: inset 4px 0 0 #cf9a44 !important;
+}
+
+body.potts-book-page main :is(
+  .list-group-item.active,
+  .nav-link.active,
+  a.active,
+  [aria-current="page"]
+) *,
+body.potts-book-page main :is(li, .list-group-item).active > a * {
+  color: #fff !important;
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.31
+   Logged-in individual identity layout
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  main .row:has(#individual-names) {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: .8rem !important;
+    margin-inline: 0 !important;
+  }
+
+  main .row:has(#individual-names) > * {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding-inline: 0 !important;
+    float: none !important;
+  }
+
+  main .row:has(#individual-names) > .potts-individual-media {
+    width: min(100%, 220px) !important;
+    max-width: 220px !important;
+    align-self: center !important;
+  }
+
+  main .row:has(#individual-names) > #individual-names,
+  main .row:has(#individual-names) > :has(#individual-names) {
+    order: 1 !important;
+  }
+
+  main .row:has(#individual-names) > .potts-individual-relationship,
+  main .row:has(#individual-names) > .potts-individual-relationship-panel {
+    order: 2 !important;
+  }
+
+  main .row:has(#individual-names) > .potts-individual-actions,
+  main .row:has(#individual-names) > .potts-individual-actions-host {
+    order: 3 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    align-self: flex-end !important;
+    margin-top: -.15rem !important;
+  }
+
+  main .potts-individual-actions :is(.dropdown, .btn-group, a, button) {
+    position: static !important;
+    max-width: 100% !important;
+  }
+
+  main .row:has(#individual-names) .potts-individual-relationship,
+  main .row:has(#individual-names) .potts-individual-relationship * {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.32
+   Owner identity, native Families tab and event visibility
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  /* Bootstrap's collapse state is how webtrees hides unchecked associated,
+     relative and historic facts. It must outrank the mobile card grid. */
+  main table.potts-mobile-primary-facts > tbody > .potts-mobile-fact-row.collapse:not(.show) {
+    display: none !important;
+  }
+
+  main .potts-owner-identity,
+  main .potts-owner-identity > *,
+  main .potts-owner-identity :has(> #individual-names) {
+    position: static !important;
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: .75rem !important;
+    margin-inline: 0 !important;
+    padding-inline: 0 !important;
+    float: none !important;
+  }
+
+  main .potts-owner-identity #individual-names,
+  main .potts-owner-identity .potts-individual-relationship,
+  main .potts-owner-identity .potts-individual-relationship-panel {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding-inline: 0 !important;
+  }
+
+  main .potts-owner-identity .potts-individual-relationship-panel,
+  main .potts-owner-identity .potts-individual-relationship-panel * {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+
+  main .wt-tab-relatives {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* These structural selectors work as soon as the AJAX response arrives;
+     the JS marker classes then provide the same result for module variants. */
+  main .wt-tab-relatives > table.wt-facts-table,
+  main .wt-tab-relatives > table.wt-facts-table > tbody {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    table-layout: auto !important;
+  }
+
+  main .wt-tab-relatives > table.wt-facts-table > colgroup {
+    display: none !important;
+  }
+
+  main .wt-tab-relatives > table.wt-facts-table > tbody > tr {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 .75rem !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .15) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+  }
+
+  main .wt-tab-relatives > table.wt-facts-table > tbody > tr > :is(th, td) {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: .68rem .72rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+
+  main .wt-tab-relatives > table.wt-facts-table > tbody > tr > th:not(:only-child) {
+    border-left: 4px solid #cf9a44 !important;
+    border-bottom: 1px solid rgba(61, 83, 64, .12) !important;
+    background: #f5ecda !important;
+    color: #26343c !important;
+    font-weight: 750 !important;
+  }
+
+  main .wt-tab-relatives > table.wt-facts-table > caption {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: .5rem .15rem .65rem !important;
+    color: #155e75 !important;
+    font-size: 1.05rem !important;
+    line-height: 1.3 !important;
+    text-align: left !important;
+  }
+
+  main .wt-tab-relatives .potts-mobile-family-row > .potts-mobile-family-cell:first-child:not(:only-child) {
+    padding: .62rem .75rem !important;
+    border-left: 4px solid #cf9a44 !important;
+    border-bottom: 1px solid rgba(61, 83, 64, .12) !important;
+    background: #f5ecda !important;
+    font-size: 1rem !important;
+    line-height: 1.25 !important;
+  }
+
+  main .potts-mobile-families :is(
+    .wt-chart-box,
+    .wt-chart-box-male,
+    .wt-chart-box-female,
+    .wt-chart-box-unknown,
+    [class*="person_box"]
+  ) {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+  }
+
+  main .potts-mobile-families :is(
+    .wt-chart-box,
+    .wt-chart-box-male,
+    .wt-chart-box-female,
+    .wt-chart-box-unknown,
+    [class*="person_box"]
+  ) * {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+
+  main .wt-tab-relatives .wt-date-difference.collapse:not(.show) {
+    display: none !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.33
+   Mobile individual-page content order
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  main .potts-individual-content-layout {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  main .potts-individual-content-layout > .potts-individual-main-branch {
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+  }
+
+  main .potts-individual-content-layout > .potts-individual-sidebar-branch {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    margin-top: 1rem !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.34
+   Place the complete individual sidebar after mobile content
+   ------------------------------------------------------------ */
+
+.potts-individual-sidebar-placeholder {
+  display: none !important;
+}
+
+@media (max-width: 767.98px) {
+  main .potts-relocated-individual-sidebar {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    margin: 1rem 0 0 !important;
+    padding-inline: 0 !important;
+    float: none !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.38
+   Deterministic mobile individual-page sequence
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  main .potts-individual-main-branch > .potts-relocated-individual-sidebar,
+  main .potts-relocated-individual-sidebar {
+    order: 99 !important;
+    align-self: stretch !important;
+    clear: both !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.40
+   Relationship result below the mobile individual title
+   ------------------------------------------------------------ */
+
+@media (max-width: 767.98px) {
+  main .potts-individual-relationship-row > .potts-individual-title-branch {
+    order: 1 !important;
+  }
+
+  main .potts-individual-relationship-row > .potts-individual-relationship-panel {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: .75rem 0 0 !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.35
+   Native individual columns and carryover cleanup
+   ------------------------------------------------------------ */
+
+body:not(.potts-live-individual-page) .potts-stale-individual-only {
+  display: none !important;
+}
+
+@media (max-width: 767.98px) {
+  main .row:has(> .col-sm-8 #individual-tabs):has(> .col-sm-4 .wt-family-navigator) {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  main .row:has(> .col-sm-8 #individual-tabs):has(> .col-sm-4 .wt-family-navigator) > .col-sm-8 {
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+  }
+
+  main .row:has(> .col-sm-8 #individual-tabs):has(> .col-sm-4 .wt-family-navigator) > .col-sm-4 {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    margin-top: 1rem !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.36
+   Keep owner layout scoped and scripts non-rendering
+   ------------------------------------------------------------ */
+
+:root body main script,
+:root body main style,
+:root body main template,
+:root body script,
+:root body style,
+:root body template {
+  display: none !important;
+}
+
+@media (max-width: 767.98px) {
+  main .row:has(> .col-sm-8 #individual-tabs):has(> .col-sm-4 .wt-family-navigator) > .col-sm-8 {
+    order: 0 !important;
+  }
+
+  main .row:has(> .col-sm-8 #individual-tabs):has(> .col-sm-4 .wt-family-navigator) > .col-sm-4 {
+    order: 1 !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.42
+   Fact-filter visibility and relationship-card refinement
+   ------------------------------------------------------------ */
+
+/* The card layout uses important display declarations. Preserve the native
+   Bootstrap collapse state so unchecked associated, relative and historical
+   event groups remain hidden until webtrees adds .show. */
+body.potts-record-page main .wt-tab-facts .collapse:not(.show),
+body:has(.wt-individual-page) main .wt-tab-facts .collapse:not(.show),
+body.potts-record-page main #facts_content .collapse:not(.show),
+body:has(.wt-individual-page) main #facts_content .collapse:not(.show),
+body.potts-record-page main [id*="personal_facts"] .collapse:not(.show),
+body:has(.wt-individual-page) main [id*="personal_facts"] .collapse:not(.show) {
+  display: none !important;
+}
+
+/* Keep the page-level relationship result readable and away from its border.
+   Fact-level relationship summaries use separate classes and are unaffected. */
+main .potts-individual-relationship-panel {
+  box-sizing: border-box !important;
+  padding: .85rem 1.05rem !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+}
+
+main .potts-individual-relationship-panel > :is(.card, .alert, section, article, div) {
+  box-sizing: border-box !important;
+  padding: .15rem .2rem !important;
+}
+
+main .potts-individual-relationship-panel :is(p, span, a) {
+  font-weight: 500 !important;
+}
+
+main .potts-individual-relationship-panel :is(strong, b, h2, h3, h4, h5, h6) {
+  font-weight: 650 !important;
+}
+
+@media (max-width: 767.98px) {
+  main .potts-individual-relationship-panel,
+  main .potts-owner-identity .potts-individual-relationship-panel {
+    padding: .95rem 1rem !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.43
+   Restore the connected desktop fact tiles
+   ------------------------------------------------------------ */
+
+@media (min-width: 768px) {
+  body.potts-record-page main .wt-tab-facts > .wt-facts-table,
+  body:has(.wt-individual-page) main .wt-tab-facts > .wt-facts-table {
+    border-collapse: separate !important;
+    border-spacing: 0 .72rem !important;
+  }
+
+  body.potts-record-page main .wt-tab-facts > .wt-facts-table > colgroup > col:first-child,
+  body:has(.wt-individual-page) main .wt-tab-facts > .wt-facts-table > colgroup > col:first-child {
+    width: 11.5rem !important;
+  }
+
+  body.potts-record-page main .wt-tab-facts > .wt-facts-table > tbody > tr:not(:first-child):has(> :nth-child(2)) > :first-child,
+  body:has(.wt-individual-page) main .wt-tab-facts > .wt-facts-table > tbody > tr:not(:first-child):has(> :nth-child(2)) > :first-child {
+    width: 11.5rem !important;
+    min-width: 11.5rem !important;
+    padding: .72rem .78rem !important;
+    vertical-align: top !important;
+    border: 1px solid rgba(61, 83, 64, .13) !important;
+    border-right: 0 !important;
+    border-left: 4px solid rgba(185, 134, 56, .82) !important;
+    border-radius: 15px 0 0 15px !important;
+    background: #f5ecda !important;
+    background-image: none !important;
+    box-shadow: 0 7px 20px rgba(35, 48, 56, .055) !important;
+  }
+
+  body.potts-record-page main .wt-tab-facts > .wt-facts-table > tbody > tr:not(:first-child):has(> :nth-child(2)) > :last-child,
+  body:has(.wt-individual-page) main .wt-tab-facts > .wt-facts-table > tbody > tr:not(:first-child):has(> :nth-child(2)) > :last-child {
+    padding: .78rem 1rem !important;
+    vertical-align: top !important;
+    border: 1px solid rgba(61, 83, 64, .13) !important;
+    border-left: 0 !important;
+    border-radius: 0 15px 15px 0 !important;
+    background: rgba(255, 255, 255, .97) !important;
+    background-image: none !important;
+    box-shadow: 0 7px 20px rgba(35, 48, 56, .055) !important;
+  }
+
+  body.potts-record-page main .wt-tab-facts .potts-fact-summary-cell > :is(.potts-event-title-panel, .potts-fact-title),
+  body:has(.wt-individual-page) main .wt-tab-facts .potts-fact-summary-cell > :is(.potts-event-title-panel, .potts-fact-title) {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: .48rem !important;
+    margin: 0 0 .5rem !important;
+    padding: .28rem 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-image: none !important;
+    text-align: left !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.44
+   Rounded enhanced desktop fact cards
+   ------------------------------------------------------------ */
+
+@media (min-width: 768px) {
+  body.potts-record-page main .wt-tab-facts .potts-top-level-fact-row,
+  body:has(.wt-individual-page) main .wt-tab-facts .potts-top-level-fact-row {
+    background: transparent !important;
+  }
+
+  body.potts-record-page main .wt-tab-facts .potts-top-level-fact-row > .potts-fact-summary-cell,
+  body:has(.wt-individual-page) main .wt-tab-facts .potts-top-level-fact-row > .potts-fact-summary-cell {
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .13) !important;
+    border-right: 0 !important;
+    border-left: 4px solid rgba(185, 134, 56, .82) !important;
+    border-radius: 15px 0 0 15px !important;
+    background: #f5ecda !important;
+    background-clip: padding-box !important;
+    box-shadow: 0 7px 20px rgba(35, 48, 56, .065) !important;
+  }
+
+  body.potts-record-page main .wt-tab-facts .potts-top-level-fact-row > .potts-fact-detail-cell,
+  body:has(.wt-individual-page) main .wt-tab-facts .potts-top-level-fact-row > .potts-fact-detail-cell {
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .13) !important;
+    border-left: 0 !important;
+    border-radius: 0 15px 15px 0 !important;
+    background: rgba(255, 255, 255, .97) !important;
+    background-clip: padding-box !important;
+    box-shadow: 0 7px 20px rgba(35, 48, 56, .065) !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.45
+   Reliability fixes for fact filters, rounded desktop facts and silhouettes
+   ------------------------------------------------------------ */
+
+body.potts-record-page main .potts-hidden-by-history-filter,
+body:has(.wt-individual-page) main .potts-hidden-by-history-filter {
+  display: none !important;
+}
+
+body.potts-record-page main .potts-empty-script-leak,
+body:has(.wt-individual-page) main .potts-empty-script-leak {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  body.potts-record-page main .potts-facts-root table,
+  body:has(.wt-individual-page) main .potts-facts-root table,
+  body.potts-record-page main .wt-tab-facts table.wt-facts-table,
+  body:has(.wt-individual-page) main .wt-tab-facts table.wt-facts-table,
+  body.potts-record-page main #facts_content table.wt-facts-table,
+  body:has(.wt-individual-page) main #facts_content table.wt-facts-table {
+    border-collapse: separate !important;
+    border-spacing: 0 .72rem !important;
+  }
+
+  body.potts-record-page main .potts-top-level-fact-row > .potts-fact-summary-cell,
+  body:has(.wt-individual-page) main .potts-top-level-fact-row > .potts-fact-summary-cell,
+  body.potts-record-page main .potts-facts-root tr:has(> :nth-child(2)):not(:has(input[type="checkbox"])) > :first-child,
+  body:has(.wt-individual-page) main .potts-facts-root tr:has(> :nth-child(2)):not(:has(input[type="checkbox"])) > :first-child {
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .13) !important;
+    border-right: 0 !important;
+    border-left: 4px solid rgba(185, 134, 56, .82) !important;
+    border-radius: 15px 0 0 15px !important;
+    background: #f5ecda !important;
+    background-image: none !important;
+    background-clip: padding-box !important;
+    box-shadow: 0 7px 20px rgba(35, 48, 56, .06) !important;
+  }
+
+  body.potts-record-page main .potts-top-level-fact-row > .potts-fact-detail-cell,
+  body:has(.wt-individual-page) main .potts-top-level-fact-row > .potts-fact-detail-cell,
+  body.potts-record-page main .potts-facts-root tr:has(> :nth-child(2)):not(:has(input[type="checkbox"])) > :last-child,
+  body:has(.wt-individual-page) main .potts-facts-root tr:has(> :nth-child(2)):not(:has(input[type="checkbox"])) > :last-child {
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .13) !important;
+    border-left: 0 !important;
+    border-radius: 0 15px 15px 0 !important;
+    background: rgba(255, 255, 255, .97) !important;
+    background-image: none !important;
+    background-clip: padding-box !important;
+    box-shadow: 0 7px 20px rgba(35, 48, 56, .06) !important;
+  }
+}
+
+main [class*="silhouette" i]:not(.potts-modern-silhouette):not(.potts-modern-chart-silhouette),
+main img[src*="silhouette" i]:not(.potts-modern-silhouette):not(.potts-modern-chart-silhouette) {
+  opacity: 0 !important;
+}
+
+main .potts-modern-silhouette,
+main .potts-modern-chart-silhouette {
+  opacity: 1 !important;
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.47
+   Deterministic responsive fact-tile corners
+   ------------------------------------------------------------ */
+
+@media (min-width: 768px) {
+  main .potts-facts-root .potts-responsive-facts-table {
+    border-collapse: separate !important;
+    border-spacing: 0 .72rem !important;
+  }
+
+  main .potts-facts-root .potts-responsive-fact-tile {
+    background: transparent !important;
+  }
+
+  main .potts-facts-root .potts-responsive-fact-tile > .potts-responsive-fact-start {
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .13) !important;
+    border-right: 0 !important;
+    border-left: 4px solid rgba(185, 134, 56, .82) !important;
+    border-radius: 15px 0 0 15px !important;
+    background: #f5ecda !important;
+    background-clip: padding-box !important;
+  }
+
+  main .potts-facts-root .potts-responsive-fact-tile > .potts-responsive-fact-end {
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .13) !important;
+    border-left: 0 !important;
+    border-radius: 0 15px 15px 0 !important;
+    background: rgba(255, 255, 255, .97) !important;
+    background-clip: padding-box !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  main .potts-facts-root .potts-responsive-fact-tile {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    margin: 0 0 .8rem !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(61, 83, 64, .14) !important;
+    border-left: 4px solid rgba(185, 134, 56, .82) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+  }
+
+  main .potts-facts-root .potts-responsive-fact-tile > :is(
+    .potts-responsive-fact-start,
+    .potts-responsive-fact-end
+  ) {
+    display: block !important;
+    width: 100% !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  main .potts-facts-root .potts-responsive-fact-tile > .potts-responsive-fact-start {
+    border-bottom: 1px solid rgba(61, 83, 64, .11) !important;
+    background: #f5ecda !important;
+  }
+
+  main .potts-facts-root .potts-responsive-fact-tile > .potts-responsive-fact-end {
+    background: #fff !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Version 1.1.0-beta.48
+   Muted semantic colours for optional event groups
+   ------------------------------------------------------------ */
+
+main .potts-facts-root .potts-fact-category-associated > .potts-responsive-fact-start {
+  border-left-color: #648b95 !important;
+  background: #e7eff2 !important;
+}
+
+main .potts-facts-root .potts-fact-category-relative > .potts-responsive-fact-start {
+  border-left-color: #789078 !important;
+  background: #e7efe6 !important;
+}
+
+main .potts-facts-root .potts-fact-category-historic > .potts-responsive-fact-start {
+  border-left-color: #7c8284 !important;
+  background: #ecebe7 !important;
+}
+
+@media (max-width: 767.98px) {
+  main .potts-facts-root .potts-fact-category-associated {
+    border-left-color: #648b95 !important;
+  }
+
+  main .potts-facts-root .potts-fact-category-relative {
+    border-left-color: #789078 !important;
+  }
+
+  main .potts-facts-root .potts-fact-category-historic {
+    border-left-color: #7c8284 !important;
+  }
+}

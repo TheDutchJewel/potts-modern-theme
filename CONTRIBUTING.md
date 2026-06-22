@@ -1,6 +1,6 @@
 # Contributing
 
-Bug reports and focused pull requests are welcome after the public GitHub repository is created.
+Bug reports and focused pull requests are welcome through the public GitHub repository.
 
 Before submitting a change:
 

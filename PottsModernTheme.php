@@ -16,6 +16,7 @@ namespace PottsModernTheme;
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Http\Exceptions\HttpAccessDeniedException;
 use Fisharebest\Webtrees\I18N;
+use Fisharebest\Localization\Translation;
 use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleConfigInterface;
 use Fisharebest\Webtrees\Module\ModuleConfigTrait;
@@ -34,6 +35,7 @@ use function file_get_contents;
 use function implode;
 use function is_array;
 use function is_readable;
+use function file_exists;
 use function is_string;
 use function json_encode;
 use function redirect;
@@ -88,7 +90,7 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
 
     public function customModuleVersion(): string
     {
-        return '1.1.0-beta.13';
+        return '1.1.0-beta.51';
     }
 
     public function customModuleAuthorName(): string
@@ -99,6 +101,14 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
     public function customModuleSupportUrl(): string
     {
         return 'https://github.com/PottsNet/potts-modern-theme/issues';
+    }
+
+    /** @return array<string,string> */
+    public function customTranslations(string $language): array
+    {
+        $file = $this->resourcesFolder() . 'lang/' . $language . '.mo';
+
+        return file_exists($file) ? (new Translation($file))->asArray() : [];
     }
 
     public function resourcesFolder(): string
@@ -250,6 +260,8 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
                 'heritage' => I18N::translate('Heritage teal and parchment'),
                 'cool'     => I18N::translate('Cool teal and mist'),
                 'sepia'    => I18N::translate('Warm sepia and walnut'),
+                'eucalyptus' => I18N::translate('Eucalyptus green and linen'),
+                'claret'     => I18N::translate('Claret and archival ivory'),
             ],
             'TEXT_SIZE' => [
                 'standard' => I18N::translate('Standard'),
@@ -311,6 +323,16 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
                 'bg' => '#eee4d3', 'bg2' => '#fffaf1', 'ink' => '#3d3026', 'muted' => '#786a5d',
                 'blue' => '#765038', 'blue_dark' => '#4e3424', 'gold' => '#b27b33', 'green' => '#68745a',
                 'header1' => '#4a3022', 'header2' => '#765038',
+            ],
+            'eucalyptus' => [
+                'bg' => '#edf1e9', 'bg2' => '#fbfcf7', 'ink' => '#26352e', 'muted' => '#66736c',
+                'blue' => '#416b56', 'blue_dark' => '#203e34', 'gold' => '#a88a52', 'green' => '#55715e',
+                'header1' => '#203e34', 'header2' => '#416b56',
+            ],
+            'claret' => [
+                'bg' => '#f2ece8', 'bg2' => '#fffaf4', 'ink' => '#342b2d', 'muted' => '#74676a',
+                'blue' => '#743c4a', 'blue_dark' => '#4d2731', 'gold' => '#aa8954', 'green' => '#66745f',
+                'header1' => '#4d2731', 'header2' => '#743c4a',
             ],
         ];
 
@@ -452,11 +474,25 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
             $this->settings(),
             JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
         );
+        $labels_json = json_encode(
+            [
+                'menu'             => I18N::translate('Menu'),
+                'openMenu'         => I18N::translate('Open menu'),
+                'closeMenu'        => I18N::translate('Close menu'),
+                'explore'          => I18N::translate('Explore'),
+                'accountSettings'  => I18N::translate('Account and settings'),
+                'signIn'           => I18N::translate('Sign in'),
+                'signOut'          => I18N::translate('Sign out'),
+                'showMoreEvents'   => I18N::translate('Show more events'),
+                'showFewerEvents'  => I18N::translate('Show fewer events'),
+            ],
+            JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+        );
         $placeholder_urls = [];
 
         foreach ([
-            'male'         => 'silhouette-male.png',
-            'female'       => 'silhouette-female.png',
+            'male'         => 'silhouette-male.webp',
+            'female'       => 'silhouette-female.webp',
             'chartMale'    => 'chart-silhouette-male.svg',
             'chartFemale'  => 'chart-silhouette-female.svg',
             'chartUnknown' => 'chart-silhouette-unknown.svg',
@@ -474,7 +510,11 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
             }
 
             $extension = strtolower((string) pathinfo($filename, PATHINFO_EXTENSION));
-            $mime      = $extension === 'svg' ? 'image/svg+xml' : 'image/png';
+            $mime      = match ($extension) {
+                'svg'   => 'image/svg+xml',
+                'webp'  => 'image/webp',
+                default => 'image/png',
+            };
 
             // Use embedded data URLs here. boot() runs before the PSR-7 request
             // is available, so generating a module asset route at this point
@@ -493,6 +533,9 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
         if ($settings_json === false) {
             $settings_json = '{}';
         }
+        if ($labels_json === false) {
+            $labels_json = '{}';
+        }
         if ($placeholders_json === false) {
             $placeholders_json = '{}';
         }
@@ -500,7 +543,7 @@ final class PottsModernTheme extends AbstractModule implements ModuleThemeInterf
         $script_file = $this->resourcesFolder() . 'js/theme.js';
         $script      = is_readable($script_file) ? file_get_contents($script_file) : false;
 
-        $config = "\n<script id=\"potts-modern-theme-config\">window.PottsModernThemeIcons=" . $icons_json . ';window.PottsModernThemeSettings=' . $settings_json . ';window.PottsModernThemePlaceholders=' . $placeholders_json . ";</script>\n";
+        $config = "\n<script id=\"potts-modern-theme-config\">window.PottsModernThemeIcons=" . $icons_json . ';window.PottsModernThemeSettings=' . $settings_json . ';window.PottsModernThemeLabels=' . $labels_json . ';window.PottsModernThemePlaceholders=' . $placeholders_json . ";</script>\n";
 
         if ($script === false || $script === '') {
             return $config;

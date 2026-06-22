@@ -1,0 +1,361 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Potts Modern Theme package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Potts Modern Theme 1.1.0-beta.51\n"
+"Report-Msgid-Bugs-To: https://github.com/PottsNet/potts-modern-theme/issues\n"
+"POT-Creation-Date: 2026-06-21 21:18-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: PottsModernTheme.php:78
+msgid "Potts Modern"
+msgstr ""
+
+#: PottsModernTheme.php:83
+msgid "A modern, responsive heritage theme for webtrees."
+msgstr ""
+
+#: PottsModernTheme.php:167 resources/views/admin/settings.phtml:144
+msgid "Potts Modern theme settings"
+msgstr ""
+
+#: PottsModernTheme.php:260
+msgid "Heritage teal and parchment"
+msgstr ""
+
+#: PottsModernTheme.php:261
+msgid "Cool teal and mist"
+msgstr ""
+
+#: PottsModernTheme.php:262
+msgid "Warm sepia and walnut"
+msgstr ""
+
+#: PottsModernTheme.php:263
+msgid "Eucalyptus green and linen"
+msgstr ""
+
+#: PottsModernTheme.php:264
+msgid "Claret and archival ivory"
+msgstr ""
+
+#: PottsModernTheme.php:267 PottsModernTheme.php:281 PottsModernTheme.php:292
+#: PottsModernTheme.php:297
+msgid "Standard"
+msgstr ""
+
+#: PottsModernTheme.php:268
+msgid "Larger"
+msgstr ""
+
+#: PottsModernTheme.php:271
+msgid "Soft and rounded"
+msgstr ""
+
+#: PottsModernTheme.php:272
+msgid "Moderately rounded"
+msgstr ""
+
+#: PottsModernTheme.php:273
+msgid "Mostly square"
+msgstr ""
+
+#: PottsModernTheme.php:276
+msgid "Soft"
+msgstr ""
+
+#: PottsModernTheme.php:277
+msgid "Stronger"
+msgstr ""
+
+#: PottsModernTheme.php:278
+msgid "None"
+msgstr ""
+
+#: PottsModernTheme.php:282 PottsModernTheme.php:293
+msgid "Wide"
+msgstr ""
+
+#: PottsModernTheme.php:283
+msgid "Full width"
+msgstr ""
+
+#: PottsModernTheme.php:286 PottsModernTheme.php:291 PottsModernTheme.php:296
+msgid "Compact"
+msgstr ""
+
+#: PottsModernTheme.php:287
+msgid "Comfortable"
+msgstr ""
+
+#: PottsModernTheme.php:288
+msgid "Spacious"
+msgstr ""
+
+#: PottsModernTheme.php:298
+msgid "Large"
+msgstr ""
+
+#: PottsModernTheme.php:301
+msgid "Icons and labels"
+msgstr ""
+
+#: PottsModernTheme.php:302
+msgid "Labels only"
+msgstr ""
+
+#: PottsModernTheme.php:479
+msgid "Menu"
+msgstr ""
+
+#: PottsModernTheme.php:480
+msgid "Open menu"
+msgstr ""
+
+#: PottsModernTheme.php:481
+msgid "Close menu"
+msgstr ""
+
+#: PottsModernTheme.php:482
+msgid "Explore"
+msgstr ""
+
+#: PottsModernTheme.php:483
+msgid "Account and settings"
+msgstr ""
+
+#: PottsModernTheme.php:484
+msgid "Sign in"
+msgstr ""
+
+#: PottsModernTheme.php:485
+msgid "Sign out"
+msgstr ""
+
+#: PottsModernTheme.php:486
+msgid "Show more events"
+msgstr ""
+
+#: PottsModernTheme.php:487
+msgid "Show fewer events"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:136
+msgid "The Potts Modern settings have been saved."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:139
+msgid "The Potts Modern defaults have been restored."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:145
+msgid ""
+"These settings apply site-wide whenever Potts Modern is the selected theme. "
+"Changes are easy to reverse using Restore defaults."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:156
+msgid "Appearance"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:158
+msgid "Colour palette"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:158
+msgid "Choose the overall heritage colour scheme."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:159
+msgid "Text size"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:159
+msgid "Increase base text across the public site."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:160
+msgid "Card corners"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:160
+msgid "Control how rounded cards, panels and controls appear."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:161
+msgid "Card shadows"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:161
+msgid "Choose a flatter or more dimensional appearance."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:166
+msgid "Layout"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:168
+msgid "Page width"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:168
+msgid "Standard suits most screens; Wide gives charts and books more room."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:169
+msgid "Content spacing"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:169
+msgid "Adjust spacing within cards and between homepage blocks."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:170
+msgid "Individual-page sidebar"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:170
+msgid "Controls the width of the Family navigator on larger screens."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:175
+msgid "Header and navigation"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:177
+msgid "Main icon size"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:177
+msgid "Change the size of the modern genealogy menu icons."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:178
+msgid "Main menu display"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:178
+msgid "Display modern icons with labels or use labels alone."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:181
+msgid "Show the family photo strip"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:181
+msgid "Display the rotating family photograph banner beneath the menu."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:182
+msgid "Show modern dropdown icons"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:182
+msgid ""
+"Use the refreshed line icons in Charts, Lists, Calendar and other dropdown "
+"menus."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:183
+msgid "Show modern fact and event icons"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:183
+msgid ""
+"Display consistent line icons beside Birth, Marriage, Occupation, Residence "
+"and other facts."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:188
+msgid "Accessibility"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:190
+msgid "Larger controls"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:190
+msgid "Increase the height of buttons, fields and selectors for easier use."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:191
+msgid "Higher contrast"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:191
+msgid "Strengthen borders, links and keyboard focus indicators."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:192
+msgid "Reduce animation"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:192
+msgid "Remove transitions and smooth scrolling throughout the theme."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:197
+msgid "Theme preview"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:199
+msgid "Preview"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:203
+msgid "Family Tree"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:204
+msgid "Search"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:209
+msgid "Family history"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:210
+msgid "A preview of cards, text, navigation and heritage accents."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:214
+msgid "Individuals"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:215
+msgid "Place hierarchy"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:216
+msgid "Sources"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:227
+msgid "Save when you are happy with the preview."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:228
+msgid "A hard refresh may be needed after changing cached styles."
+msgstr ""
+
+#: resources/views/admin/settings.phtml:231
+msgid "Restore all Potts Modern settings to their defaults?"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:231
+msgid "Restore defaults"
+msgstr ""
+
+#: resources/views/admin/settings.phtml:232
+msgid "Save settings"
+msgstr ""
